@@ -1,7 +1,8 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Performative {
-    private static Task[] tasks = new Task[100];
+    private static ArrayList<Task> tasks = new ArrayList<>();
     private static int taskCount = 0;
 
     public static void printLine() {
@@ -14,7 +15,7 @@ public class Performative {
     public static void addTask(String input) {
         try {
             Task task = parseTask(input);
-            tasks[taskCount] = task;
+            tasks.add(task);
             taskCount += 1;
             printLine();
             System.out.println("Added: " + task);
@@ -92,18 +93,32 @@ public class Performative {
         return new Task(input);
     }
 
+    public static void deleteTask(int taskNumber) {
+        printLine();
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            System.out.println("Invalid task number");
+            printLine();
+            return;
+        }
+        Task removedTask = tasks.remove(taskNumber - 1);
+        taskCount -= 1;
+        System.out.println("Deleted task " + taskNumber + ": " + removedTask);
+        System.out.println("There are now " + taskCount + " tasks in the list.");
+        printLine();
+    }
+
     public static void listTasks() {
         printLine();
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
-            System.out.println((i + 1) + ". " + tasks[i]);
+            System.out.println((i + 1) + ". " + tasks.get(i));
         }
         printLine();
     }
 
     public static void markTask(int taskNumber) {
         printLine();
-        Task task = tasks[taskNumber - 1];
+        Task task = tasks.get(taskNumber - 1);
         task.markDone();
         System.out.println("Marked this task as done:\n" + task);
         printLine();
@@ -111,7 +126,7 @@ public class Performative {
 
     public static void unmarkTask(int taskNumber) {
         printLine();
-        Task task = tasks[taskNumber - 1];
+        Task task = tasks.get(taskNumber - 1);
         task.markUndone();
         System.out.println("Marked this task as undone:\n" + task);
         printLine();
@@ -155,6 +170,22 @@ public class Performative {
                     }
                 } else {
                     System.out.println("Invalid format");
+                }
+            } else if (input.startsWith("delete")) {
+                String[] parts = input.split(" ");
+                if (parts.length == 2) {
+                    try {
+                        int taskNumber = Integer.parseInt(parts[1]);
+                        if (taskNumber < 1 || taskNumber > taskCount) {
+                            System.out.println("Invalid task number");
+                        } else {
+                            deleteTask(taskNumber);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid number format");
+                    }
+                } else {
+                    System.out.println("Invalid format. Use: delete <task number>");
                 }
             } else if (input.startsWith("deadline")
                     || input.startsWith("event")
