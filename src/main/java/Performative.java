@@ -16,6 +16,14 @@ public class Performative {
         taskCount += 1;
     }
 
+    public static void listTasks() {
+        printLine();
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println(tasks[i]);
+        }
+        printLine();
+    }
+
     public static void echo(String input) {
         printLine();
         System.out.println("added: " + input);
@@ -40,6 +48,8 @@ public class Performative {
                 scanner.close();
                 endChat();
                 break;
+            } else if (input.equals("list")) {
+                listTasks();
             } else {
                 addTask(input);
                 echo(input);
