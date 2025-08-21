@@ -11,10 +11,23 @@ public class Performative {
         System.out.println();
     }
 
-    public static void addTask(String task) {
-        tasks[taskCount] = new Task(task);
+    public static void addTask(String input) {
+        Task task = parseTask(input);
+        tasks[taskCount] = task;
         taskCount += 1;
-        echo(task);
+        printLine();
+        System.out.println("added: " + task.toString());
+        printLine();
+    }
+
+    public static Task parseTask(String input) {
+        if (input.startsWith("todo ")) {
+            // make a Todo task after the todo keyword
+            String description = input.substring(5);
+            return new Todo(description);
+        }
+        return new Task(input);
+
     }
 
     public static void listTasks() {
@@ -26,17 +39,11 @@ public class Performative {
         printLine();
     }
 
-    public static void echo(String input) {
-        printLine();
-        System.out.println("added: " + input);
-        printLine();
-    }
-
     public static void markTask(int taskNumber) {
         printLine();
         Task task = tasks[taskNumber - 1];
         task.markDone();
-        System.out.println("Marked this task as done:\n" + task.toString());
+        System.out.println("Marked this task as done:\n" + task);
         printLine();
     }
 
@@ -44,7 +51,7 @@ public class Performative {
         printLine();
         Task task = tasks[taskNumber - 1];
         task.markUndone();
-        System.out.println("Marked this task as undone:\n" + task.toString());
+        System.out.println("Marked this task as undone:\n" + task);
         printLine();
     }
 
@@ -80,18 +87,19 @@ public class Performative {
                             unmarkTask(taskNumber);
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid number format, added as task instead");
-                        addTask(input);
+                        System.out.println("Invalid number format");
                     } catch (NullPointerException e) {
-                        System.out.println("Invalid number, added as task instead");
-                        addTask(input);
+                        System.out.println("Invalid number");
                     }
                 } else {
-                    System.out.println("Invalid format, added as task instead");
-                    addTask(input);
+                    System.out.println("Invalid format");
                 }
-            } else {
+            } else if (input.startsWith("deadline ")
+                    || input.startsWith("event ")
+                    || input.startsWith("todo ")) {
                 addTask(input);
+            } else {
+                printLine();
             }
         }
     }
