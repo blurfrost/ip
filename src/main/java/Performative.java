@@ -16,7 +16,8 @@ public class Performative {
         tasks[taskCount] = task;
         taskCount += 1;
         printLine();
-        System.out.println("added: " + task);
+        System.out.println("Added: " + task);
+        System.out.println("There are now " + taskCount + " tasks in the list.");
         printLine();
     }
 
