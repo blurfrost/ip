@@ -16,7 +16,7 @@ public class Performative {
         tasks[taskCount] = task;
         taskCount += 1;
         printLine();
-        System.out.println("added: " + task.toString());
+        System.out.println("added: " + task);
         printLine();
     }
 
@@ -34,9 +34,19 @@ public class Performative {
                 String by = remaining.substring(byIndex + 5);
                 return new Deadline(description, by);
             }
+        } else if (input.startsWith("event ")) {
+            // make a Event task after the event keyword
+            String remaining = input.substring(6);
+            int fromIndex = remaining.indexOf(" /from ");
+            int toIndex = remaining.indexOf(" /to ");
+            if (fromIndex != -1 && toIndex != -1 && toIndex > fromIndex) {
+                String description = remaining.substring(0, fromIndex);
+                String from = remaining.substring(fromIndex + 7, toIndex);
+                String to = remaining.substring(toIndex + 5);
+                return new Event(description, from, to);
+            }
         }
         return new Task(input);
-
     }
 
     public static void listTasks() {
