@@ -37,6 +37,13 @@ public class Performative {
         printLine();
     }
 
+    public static void unmarkTask(int taskNumber) {
+        printLine();
+        Task task = tasks[taskNumber - 1];
+        System.out.println("Marked task " + taskNumber + " as undone: " + task.markUndone());
+        printLine();
+    }
+
     public static void endChat() {
         printLine();
         System.out.println("Bye. Hope to see you again soon!");
@@ -58,12 +65,16 @@ public class Performative {
             } else if (input.equals("list")) {
                 listTasks();
             // check for the "mark X" command
-            } else if (input.startsWith("mark ")) {
+            } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
                     try {
                         int taskNumber = Integer.parseInt(parts[1]);
-                        markTask(taskNumber);
+                        if (input.startsWith("mark ")) {
+                            markTask(taskNumber);
+                        } else {
+                            unmarkTask(taskNumber);
+                        }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid number format, added as task instead");
                         addTask(input);
@@ -75,8 +86,7 @@ public class Performative {
                     System.out.println("Invalid format, added as task instead");
                     addTask(input);
                 }
-            }
-            else {
+            } else {
                 addTask(input);
             }
         }
