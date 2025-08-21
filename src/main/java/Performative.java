@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class Performative {
     private static Task[] tasks = new Task[100];
+    private static int taskCount = 0;
 
     public static void printLine() {
         for (int i = 0; i < 40; i++) {
@@ -11,15 +12,16 @@ public class Performative {
     }
 
     public static void addTask(String task) {
-        tasks[Task.getCurrentTasks()] = new Task(task);
+        tasks[taskCount] = new Task(task);
+        taskCount += 1;
         echo(task);
     }
 
     public static void listTasks() {
         printLine();
         System.out.println("Here are the tasks in your list:");
-        for (int i = 0; i < Task.getCurrentTasks(); i++) {
-            System.out.println(tasks[i]);
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println((i + 1) + ". " + tasks[i]);
         }
         printLine();
     }
@@ -33,14 +35,16 @@ public class Performative {
     public static void markTask(int taskNumber) {
         printLine();
         Task task = tasks[taskNumber - 1];
-        System.out.println("Marked task " + taskNumber + " as done: " + task.markDone());
+        task.markDone();
+        System.out.println("Marked this task as done:\n" + task.toString());
         printLine();
     }
 
     public static void unmarkTask(int taskNumber) {
         printLine();
         Task task = tasks[taskNumber - 1];
-        System.out.println("Marked task " + taskNumber + " as undone: " + task.markUndone());
+        task.markUndone();
+        System.out.println("Marked this task as undone:\n" + task.toString());
         printLine();
     }
 
