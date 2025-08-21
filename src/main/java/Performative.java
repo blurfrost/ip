@@ -25,6 +25,15 @@ public class Performative {
             // make a Todo task after the todo keyword
             String description = input.substring(5);
             return new Todo(description);
+        } else if (input.startsWith("deadline ")) {
+            // make a Deadline task after the deadline keyword
+            String remaining = input.substring(9);
+            int byIndex = remaining.indexOf(" /by ");
+            if (byIndex != -1) {
+                String description = remaining.substring(0, byIndex);
+                String by = remaining.substring(byIndex + 5);
+                return new Deadline(description, by);
+            }
         }
         return new Task(input);
 
