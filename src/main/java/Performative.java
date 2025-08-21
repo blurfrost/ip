@@ -12,38 +12,81 @@ public class Performative {
     }
 
     public static void addTask(String input) {
-        Task task = parseTask(input);
-        tasks[taskCount] = task;
-        taskCount += 1;
-        printLine();
-        System.out.println("added: " + task);
-        printLine();
+        try {
+            Task task = parseTask(input);
+            tasks[taskCount] = task;
+            taskCount += 1;
+            printLine();
+            System.out.println("added: " + task);
+            printLine();
+        } catch (PerformativeException e) {
+            printLine();
+            System.out.println("Error: " + e.getMessage());
+            printLine();
+        }
     }
 
-    public static Task parseTask(String input) {
-        if (input.startsWith("todo ")) {
+    public static Task parseTask(String input) throws PerformativeException {
+        if (input.startsWith("todo")) {
+            if (input.equals("todo")) {
+                throw new PerformativeException("The description of a todo cannot be empty.");
+            }
             // make a Todo task after the todo keyword
-            String description = input.substring(5);
+            String description = input.substring(5).trim();
+            if (description.isEmpty()) {
+                throw new PerformativeException("The description of a todo cannot be empty.");
+            }
             return new Todo(description);
-        } else if (input.startsWith("deadline ")) {
+        } else if (input.startsWith("deadline")) {
+            if (input.equals("deadline")) {
+                throw new PerformativeException("The description of a deadline cannot be empty.");
+            }
             // make a Deadline task after the deadline keyword
-            String remaining = input.substring(9);
+            String remaining = input.substring(9).trim();
+            if (remaining.isEmpty()) {
+                throw new PerformativeException("The description of a deadline cannot be empty.");
+            }
             int byIndex = remaining.indexOf(" /by ");
             if (byIndex != -1) {
-                String description = remaining.substring(0, byIndex);
-                String by = remaining.substring(byIndex + 5);
+                String description = remaining.substring(0, byIndex).trim();
+                String by = remaining.substring(byIndex + 5).trim();
+                if (description.isEmpty()) {
+                    throw new PerformativeException("The description of a deadline cannot be empty.");
+                }
+                if (by.isEmpty()) {
+                    throw new PerformativeException("The deadline time cannot be empty.");
+                }
                 return new Deadline(description, by);
+            } else {
+                throw new PerformativeException("Deadline format should be: deadline <description> /by <time>");
             }
-        } else if (input.startsWith("event ")) {
+        } else if (input.startsWith("event")) {
+            if (input.equals("event")) {
+                throw new PerformativeException("The description of an event cannot be empty.");
+            }
             // make a Event task after the event keyword
-            String remaining = input.substring(6);
+            String remaining = input.substring(6).trim();
+            if (remaining.isEmpty()) {
+                throw new PerformativeException("The description of an event cannot be empty.");
+            }
             int fromIndex = remaining.indexOf(" /from ");
             int toIndex = remaining.indexOf(" /to ");
             if (fromIndex != -1 && toIndex != -1 && toIndex > fromIndex) {
-                String description = remaining.substring(0, fromIndex);
-                String from = remaining.substring(fromIndex + 7, toIndex);
-                String to = remaining.substring(toIndex + 5);
+                String description = remaining.substring(0, fromIndex).trim();
+                String from = remaining.substring(fromIndex + 7, toIndex).trim();
+                String to = remaining.substring(toIndex + 5).trim();
+                if (description.isEmpty()) {
+                    throw new PerformativeException("The description of an event cannot be empty.");
+                }
+                if (from.isEmpty()) {
+                    throw new PerformativeException("The start time of an event cannot be empty.");
+                }
+                if (to.isEmpty()) {
+                    throw new PerformativeException("The end time of an event cannot be empty.");
+                }
                 return new Event(description, from, to);
+            } else {
+                throw new PerformativeException("Event format should be: event <description> /from <start> /to <end>");
             }
         }
         return new Task(input);
@@ -113,11 +156,12 @@ public class Performative {
                 } else {
                     System.out.println("Invalid format");
                 }
-            } else if (input.startsWith("deadline ")
-                    || input.startsWith("event ")
-                    || input.startsWith("todo ")) {
+            } else if (input.startsWith("deadline")
+                    || input.startsWith("event")
+                    || input.startsWith("todo")) {
                 addTask(input);
             } else {
+                System.out.println("Erm actually, your keyword's not supported");
                 printLine();
             }
         }
