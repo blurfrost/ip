@@ -1,6 +1,9 @@
 import java.util.Scanner;
 
 public class Performative {
+    private static String[] tasks = new String[100];
+    private static int taskCount = 0;
+
     public static void printLine() {
         for (int i = 0; i < 40; i++) {
             System.out.print("─");
@@ -8,9 +11,14 @@ public class Performative {
         System.out.println();
     }
 
+    public static void addTask(String task) {
+        tasks[taskCount] = (taskCount + 1) + ". " + task;
+        taskCount += 1;
+    }
+
     public static void echo(String input) {
         printLine();
-        System.out.println(input);
+        System.out.println("added: " + input);
         printLine();
     }
 
@@ -32,8 +40,10 @@ public class Performative {
                 scanner.close();
                 endChat();
                 break;
+            } else {
+                addTask(input);
+                echo(input);
             }
-            echo(input);
         }
     }
 }
