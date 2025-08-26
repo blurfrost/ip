@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -18,17 +19,28 @@ public class Performative {
 
     public static void addTask(String input) {
         try {
+            // parse input and create task object (according to type)
             Task task = parseTask(input);
             tasks.add(task);
             taskCount += 1;
+
+            // output to terminal
             printLine();
             System.out.println("Added: " + task);
             System.out.println("There are now " + taskCount + " tasks in the list.");
             printLine();
+
+            // write task to save file
+            FileWriter writer = new FileWriter(saveFile, true);
+            writer.write(task.toSaveFormat() + "\n");
+            writer.close();
+
         } catch (PerformativeException e) {
             printLine();
             System.out.println("Error: " + e.getMessage());
             printLine();
+        } catch (IOException e) {
+            System.out.println("Error writing to save file");
         }
     }
 
@@ -221,5 +233,3 @@ public class Performative {
         }
     }
 }
-
-
