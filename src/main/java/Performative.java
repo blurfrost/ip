@@ -1,9 +1,13 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Performative {
     private static ArrayList<Task> tasks = new ArrayList<>();
     private static int taskCount = 0;
+    private static boolean saveCreated = false;
+    private static File saveFile;
 
     public static void printLine() {
         for (int i = 0; i < 40; i++) {
@@ -138,7 +142,26 @@ public class Performative {
         printLine();
     }
 
+    public static void initializeSave() throws IOException {
+        saveFile = new File("../../../data/savefile.txt");
+        if (!saveFile.exists()) {
+            System.out.println("save not found, creating new save");
+            saveFile.createNewFile();
+            saveCreated = true;
+            System.out.println(saveFile.exists() ? "save created" : "save not created");
+        } else {
+            System.out.println("save found");
+        }
+    }
+
     public static void main(String[] args) {
+        // initialize save file, or create one if it doesn't exist
+        try {
+            initializeSave();
+        } catch (IOException e) {
+            System.out.println("Error initializing save file");
+        }
+
         printLine();
         System.out.println("Hello! I'm Performative.\nWhat can I do for you?");
         printLine();
