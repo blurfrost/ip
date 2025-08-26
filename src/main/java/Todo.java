@@ -1,5 +1,5 @@
 public class Todo extends Task {
-    public Todo(String description) {
+    public Todo (String description) {
         super(description);
     }
 
@@ -7,7 +7,6 @@ public class Todo extends Task {
     public String toSaveFormat() {
         return "Todo; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription();
     }
-
     @Override
     public String toString() {
         return "[T]" + super.toString();
