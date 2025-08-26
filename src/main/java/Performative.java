@@ -157,12 +157,47 @@ public class Performative {
     public static void initializeSave() throws IOException {
         saveFile = new File("../../../data/savefile.txt");
         if (!saveFile.exists()) {
+            // if save file doesn't exist, create it
             System.out.println("save not found, creating new save");
             saveFile.createNewFile();
             saveCreated = true;
             System.out.println(saveFile.exists() ? "save created" : "save not created");
         } else {
+            // if save file exists, load tasks from it
             System.out.println("save found");
+            Scanner fileScanner = new Scanner(saveFile);
+            do {
+                String data = fileScanner.nextLine();
+                String[] parts = data.split("; ");
+                String type = parts[0];
+                Task task;
+                // create task object according to type
+                switch (type) {
+                    case "Task":
+                        task = new Task(parts[2]);
+                        break;
+                    case "Todo":
+                        task = new Todo(parts[2]);
+                        break;
+                    case "Deadline":
+                        task = new Deadline(parts[2], parts[3]);
+                        break;
+                    case "Event":
+                        task = new Event(parts[2], parts[3], parts[4]);
+                        break;
+                    default:
+                        System.out.println("Unknown task type in save file: " + type);
+                        continue;
+                }
+                // mark task as done if it was indicated as completed in the save file
+                if (parts[1].equals("Complete")) {
+                    task.markDone();
+                }
+                // add task to the list of tasks
+                tasks.add(task);
+                taskCount += 1;
+            } while (fileScanner.hasNextLine());
+            fileScanner.close();
         }
     }
 
@@ -188,6 +223,7 @@ public class Performative {
             } else if (input.equals("list")) {
                 listTasks();
                 // check for the "mark X" command
+                // TODO: marking/unmarking should also update the save file
             } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
@@ -206,6 +242,7 @@ public class Performative {
                 } else {
                     System.out.println("Invalid format");
                 }
+            // TODO: deleting should also update the save file
             } else if (input.startsWith("delete")) {
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
