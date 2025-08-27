@@ -1,20 +1,37 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class Event extends Task {
-    private String start;
-    private String end;
+    private LocalDateTime start;
+    private LocalDateTime end;
+
 
     public Event(String description, String start, String end) {
         super(description);
-        this.start = start;
-        this.end = end;
+        this.start = parseDateTime(start);
+        this.end = parseDateTime(end);
+    }
+
+    private LocalDateTime parseDateTime(String dateTimeString) throws DateTimeParseException {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        return LocalDateTime.parse(dateTimeString, inputFormatter);
+    }
+
+    public String formatDateTime(LocalDateTime dateTime) {
+        // Format as "dd MMM yyyy HHmm"
+        return dateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HHmm"));
     }
 
     @Override
     public String toSaveFormat() {
-        return "Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + start + "; " + end;
+        DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        return "Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
     }
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + start + ", to: " + end + ")";
+        return "[E]" + super.toString() + " (from: " + formatDateTime(this.start) + ", to: " + formatDateTime(this.end) + ")";
     }
 }
