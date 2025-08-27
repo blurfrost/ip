@@ -1,18 +1,19 @@
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Performative {
-    private static ArrayList<Task> tasks = new ArrayList<>();
-    private static int taskCount = 0;
-    private static File saveFile;
+    private ArrayList<Task> tasks;
+    private int taskCount;
+    private Storage storage;
     private Ui ui;
-    
-    public Performative() {
+
+    public Performative(String filePath) {
         ui = new Ui();
+        storage = new Storage(filePath);
+        tasks = new ArrayList<>();
+        taskCount = 0;
     }
 
     public void addTask(String input) {
@@ -25,10 +26,8 @@ public class Performative {
             // output to terminal
             ui.addTaskMessage(task, taskCount);
 
-            // write task to save file
-            FileWriter writer = new FileWriter(saveFile, true);
-            writer.write(task.toSaveFormat() + "\n");
-            writer.close();
+            // save task to file
+            storage.saveTask(task);
         } catch (PerformativeException e) {
             ui.exceptionMessage(e.getMessage());
         } catch (IOException e) {
@@ -118,11 +117,7 @@ public class Performative {
     // rewrite the entire save file with the current list of tasks
     public void updateFile() {
         try {
-            FileWriter writer = new FileWriter(saveFile, false); // false = overwrite mode
-            for (Task task : tasks) {
-                writer.write(task.toSaveFormat() + "\n");
-            }
-            writer.close();
+            storage.saveTasks(tasks);
         } catch (IOException e) {
             ui.exceptionMessage("Error writing to save file");
         }
@@ -143,47 +138,26 @@ public class Performative {
     }
 
     public void initializeSave() throws IOException {
-        saveFile = new File("../../../data/savefile.txt");
-        ui.detectSaveStatus(saveFile.exists());
-        if (!saveFile.exists()) {
+        ui.detectSaveStatus(storage.fileExists());
+
+        if (!storage.fileExists()) {
             // if save file doesn't exist, create it
-            saveFile.createNewFile();
-            ui.saveCreatedStatus(saveFile.exists());
+            boolean created = storage.initializeFile();
+            ui.saveCreatedStatus(created);
+            if (!created) {
+                throw new IOException("Could not create save file");
+            }
         } else {
             // if save file exists, load tasks from it
-            Scanner fileScanner = new Scanner(saveFile);
-            while (fileScanner.hasNextLine()) {
-                String data = fileScanner.nextLine();
-                String[] parts = data.split("; ");
-                String type = parts[0];
-                Task task;
-                // create task object according to type
-                switch (type) {
-                    case "Task":
-                        task = new Task(parts[2]);
-                        break;
-                    case "Todo":
-                        task = new Todo(parts[2]);
-                        break;
-                    case "Deadline":
-                        task = new Deadline(parts[2], parts[3]);
-                        break;
-                    case "Event":
-                        task = new Event(parts[2], parts[3], parts[4]);
-                        break;
-                    default:
-                        ui.unknownTaskFound(type);
-                        continue;
+            tasks = storage.loadTasks();
+            taskCount = tasks.size();
+
+            // Check for unknown task types during loading
+            for (Task task : tasks) {
+                if (task == null) {
+                    ui.unknownTaskFound("Unknown");
                 }
-                // mark task as done if it was indicated as completed in the save file
-                if (parts[1].equals("Complete")) {
-                    task.markDone();
-                }
-                // add task to the list of tasks
-                tasks.add(task);
-                taskCount += 1;
             }
-            fileScanner.close();
 
             ui.loadTasksStatus(taskCount);
             ui.listTasks(tasks);
@@ -253,9 +227,8 @@ public class Performative {
             ui.printLine();
         }
     }
-    
 
     public static void main(String[] args) {
-        new Performative().run();
+        new Performative("../../../data/savefile.txt").run();
     }
 }
