@@ -17,6 +17,19 @@ public class Task {
         this.status = false;
     }
 
+    public boolean getStatus() {
+        return this.status;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    // express the task in a format for saving to a file
+    public String toSaveFormat() {
+        return "Task; " + (status ? "Complete" : "Incomplete") + "; " + description;
+    }
+
     @Override
     public String toString() {
         return "[" + (status ? "X" : " ") + "] " + description;

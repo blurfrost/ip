@@ -1,9 +1,13 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Performative {
     private static ArrayList<Task> tasks = new ArrayList<>();
     private static int taskCount = 0;
+    private static File saveFile;
 
     public static void printLine() {
         for (int i = 0; i < 40; i++) {
@@ -14,17 +18,28 @@ public class Performative {
 
     public static void addTask(String input) {
         try {
+            // parse input and create task object (according to type)
             Task task = parseTask(input);
             tasks.add(task);
             taskCount += 1;
+
+            // output to terminal
             printLine();
             System.out.println("Added: " + task);
             System.out.println("There are now " + taskCount + " tasks in the list.");
             printLine();
+
+            // write task to save file
+            FileWriter writer = new FileWriter(saveFile, true);
+            writer.write(task.toSaveFormat() + "\n");
+            writer.close();
+
         } catch (PerformativeException e) {
             printLine();
             System.out.println("Error: " + e.getMessage());
             printLine();
+        } catch (IOException e) {
+            System.out.println("Error writing to save file");
         }
     }
 
@@ -95,16 +110,12 @@ public class Performative {
 
     public static void deleteTask(int taskNumber) {
         printLine();
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            System.out.println("Invalid task number");
-            printLine();
-            return;
-        }
         Task removedTask = tasks.remove(taskNumber - 1);
         taskCount -= 1;
         System.out.println("Deleted task " + taskNumber + ": " + removedTask);
         System.out.println("There are now " + taskCount + " tasks in the list.");
         printLine();
+        updateFile();
     }
 
     public static void listTasks() {
@@ -116,12 +127,26 @@ public class Performative {
         printLine();
     }
 
+    // rewrite the entire save file with the current list of tasks
+    public static void updateFile() {
+        try {
+            FileWriter writer = new FileWriter(saveFile, false); // false = overwrite mode
+            for (Task task : tasks) {
+                writer.write(task.toSaveFormat() + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error writing to save file");
+        }
+    }
+
     public static void markTask(int taskNumber) {
         printLine();
         Task task = tasks.get(taskNumber - 1);
         task.markDone();
         System.out.println("Marked this task as done:\n" + task);
         printLine();
+        updateFile();
     }
 
     public static void unmarkTask(int taskNumber) {
@@ -130,6 +155,7 @@ public class Performative {
         task.markUndone();
         System.out.println("Marked this task as undone:\n" + task);
         printLine();
+        updateFile();
     }
 
     public static void endChat() {
@@ -138,7 +164,68 @@ public class Performative {
         printLine();
     }
 
+    public static void initializeSave() throws IOException {
+        saveFile = new File("../../../data/savefile.txt");
+        if (!saveFile.exists()) {
+            // if save file doesn't exist, create it
+            System.out.println("Save not found, creating new save");
+            saveFile.createNewFile();
+            System.out.println(saveFile.exists() ? "Save created" : "Save not created");
+        } else {
+            // if save file exists, load tasks from it
+            System.out.println("Save found");
+            Scanner fileScanner = new Scanner(saveFile);
+            while (fileScanner.hasNextLine()) {
+                String data = fileScanner.nextLine();
+                String[] parts = data.split("; ");
+                String type = parts[0];
+                Task task;
+                // create task object according to type
+                switch (type) {
+                    case "Task":
+                        task = new Task(parts[2]);
+                        break;
+                    case "Todo":
+                        task = new Todo(parts[2]);
+                        break;
+                    case "Deadline":
+                        task = new Deadline(parts[2], parts[3]);
+                        break;
+                    case "Event":
+                        task = new Event(parts[2], parts[3], parts[4]);
+                        break;
+                    default:
+                        System.out.println("Unknown task type in save file: " + type);
+                        continue;
+                }
+                // mark task as done if it was indicated as completed in the save file
+                if (parts[1].equals("Complete")) {
+                    task.markDone();
+                }
+                // add task to the list of tasks
+                tasks.add(task);
+                taskCount += 1;
+            }
+            fileScanner.close();
+            if (taskCount > 0) {
+                System.out.println("Loading tasks from save:");
+                listTasks();
+            } else {
+                System.out.println("No tasks in save");
+            }
+
+        }
+        System.out.println("Initialization complete");
+    }
+
     public static void main(String[] args) {
+        // initialize save file, or create one if it doesn't exist
+        try {
+            initializeSave();
+        } catch (IOException e) {
+            System.out.println("Error initializing save file");
+        }
+
         printLine();
         System.out.println("Hello! I'm Performative.\nWhat can I do for you?");
         printLine();
@@ -152,7 +239,7 @@ public class Performative {
                 break;
             } else if (input.equals("list")) {
                 listTasks();
-                // check for the "mark X" command
+            // check for the "mark X" command
             } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
@@ -167,22 +254,23 @@ public class Performative {
                         System.out.println("Invalid number format");
                     } catch (NullPointerException e) {
                         System.out.println("Invalid number");
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Invalid task number. Input a task from 1 to " + taskCount);
                     }
                 } else {
                     System.out.println("Invalid format");
                 }
+            // TODO: deleting should also update the save file
             } else if (input.startsWith("delete")) {
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
                     try {
                         int taskNumber = Integer.parseInt(parts[1]);
-                        if (taskNumber < 1 || taskNumber > taskCount) {
-                            System.out.println("Invalid task number");
-                        } else {
-                            deleteTask(taskNumber);
-                        }
+                        deleteTask(taskNumber);
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid number format");
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Invalid task number. Input a task from 1 to " + taskCount);
                     }
                 } else {
                     System.out.println("Invalid format. Use: delete <task number>");
@@ -198,5 +286,3 @@ public class Performative {
         }
     }
 }
-
-
