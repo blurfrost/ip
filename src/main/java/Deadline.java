@@ -15,7 +15,7 @@ public class Deadline extends Task {
         return LocalDateTime.parse(dateTimeString, inputFormatter);
     }
 
-    public String formatBy(LocalDateTime dateTime) {
+    public String formatDateTime(LocalDateTime dateTime) {
         // Format as "dd MMM yyyy HHmm"
         return dateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HHmm"));
     }
@@ -29,6 +29,6 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + formatBy(this.by) + ")";
+        return "[D]" + super.toString() + " (by: " + formatDateTime(this.by) + ")";
     }
 }
