@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class Performative {
     private static ArrayList<Task> tasks = new ArrayList<>();
     private static int taskCount = 0;
-    private static boolean saveCreated = false;
     private static File saveFile;
 
     public static void printLine() {
@@ -111,16 +110,12 @@ public class Performative {
 
     public static void deleteTask(int taskNumber) {
         printLine();
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            System.out.println("Invalid task number");
-            printLine();
-            return;
-        }
         Task removedTask = tasks.remove(taskNumber - 1);
         taskCount -= 1;
         System.out.println("Deleted task " + taskNumber + ": " + removedTask);
         System.out.println("There are now " + taskCount + " tasks in the list.");
         printLine();
+        updateFile();
     }
 
     public static void listTasks() {
@@ -132,12 +127,26 @@ public class Performative {
         printLine();
     }
 
+    // rewrite the entire save file with the current list of tasks
+    public static void updateFile() {
+        try {
+            FileWriter writer = new FileWriter(saveFile, false); // false = overwrite mode
+            for (Task task : tasks) {
+                writer.write(task.toSaveFormat() + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error writing to save file");
+        }
+    }
+
     public static void markTask(int taskNumber) {
         printLine();
         Task task = tasks.get(taskNumber - 1);
         task.markDone();
         System.out.println("Marked this task as done:\n" + task);
         printLine();
+        updateFile();
     }
 
     public static void unmarkTask(int taskNumber) {
@@ -146,6 +155,7 @@ public class Performative {
         task.markUndone();
         System.out.println("Marked this task as undone:\n" + task);
         printLine();
+        updateFile();
     }
 
     public static void endChat() {
@@ -158,15 +168,14 @@ public class Performative {
         saveFile = new File("../../../data/savefile.txt");
         if (!saveFile.exists()) {
             // if save file doesn't exist, create it
-            System.out.println("save not found, creating new save");
+            System.out.println("Save not found, creating new save");
             saveFile.createNewFile();
-            saveCreated = true;
-            System.out.println(saveFile.exists() ? "save created" : "save not created");
+            System.out.println(saveFile.exists() ? "Save created" : "Save not created");
         } else {
             // if save file exists, load tasks from it
-            System.out.println("save found");
+            System.out.println("Save found");
             Scanner fileScanner = new Scanner(saveFile);
-            do {
+            while (fileScanner.hasNextLine()) {
                 String data = fileScanner.nextLine();
                 String[] parts = data.split("; ");
                 String type = parts[0];
@@ -196,9 +205,17 @@ public class Performative {
                 // add task to the list of tasks
                 tasks.add(task);
                 taskCount += 1;
-            } while (fileScanner.hasNextLine());
+            }
             fileScanner.close();
+            if (taskCount > 0) {
+                System.out.println("Loading tasks from save:");
+                listTasks();
+            } else {
+                System.out.println("No tasks in save");
+            }
+
         }
+        System.out.println("Initialization complete");
     }
 
     public static void main(String[] args) {
@@ -222,8 +239,7 @@ public class Performative {
                 break;
             } else if (input.equals("list")) {
                 listTasks();
-                // check for the "mark X" command
-                // TODO: marking/unmarking should also update the save file
+            // check for the "mark X" command
             } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
@@ -238,6 +254,8 @@ public class Performative {
                         System.out.println("Invalid number format");
                     } catch (NullPointerException e) {
                         System.out.println("Invalid number");
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Invalid task number. Input a task from 1 to " + taskCount);
                     }
                 } else {
                     System.out.println("Invalid format");
@@ -248,13 +266,11 @@ public class Performative {
                 if (parts.length == 2) {
                     try {
                         int taskNumber = Integer.parseInt(parts[1]);
-                        if (taskNumber < 1 || taskNumber > taskCount) {
-                            System.out.println("Invalid task number");
-                        } else {
-                            deleteTask(taskNumber);
-                        }
+                        deleteTask(taskNumber);
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid number format");
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Invalid task number. Input a task from 1 to " + taskCount);
                     }
                 } else {
                     System.out.println("Invalid format. Use: delete <task number>");
