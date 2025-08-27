@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -64,7 +65,6 @@ public class Performative {
             }
             int byIndex = remaining.indexOf(" /by ");
             if (byIndex != -1) {
-
                 String description = remaining.substring(0, byIndex).trim();
                 String by = remaining.substring(byIndex + 5).trim();
                 if (description.isEmpty()) {
@@ -73,7 +73,11 @@ public class Performative {
                 if (by.isEmpty()) {
                     throw new PerformativeException("The deadline time cannot be empty.");
                 }
-                return new Deadline(description, by);
+                try {
+                    return new Deadline(description, by);
+                } catch (DateTimeParseException e) {
+                    throw new PerformativeException("The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
+                }
             } else {
                 throw new PerformativeException("Deadline format should be: deadline <description> /by <time>");
             }
@@ -100,9 +104,13 @@ public class Performative {
                 if (to.isEmpty()) {
                     throw new PerformativeException("The end time of an event cannot be empty.");
                 }
-                return new Event(description, from, to);
+                try {
+                    return new Event(description, from, to);
+                } catch (DateTimeParseException e) {
+                    throw new PerformativeException("Invalid event format, should be: event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+                }
             } else {
-                throw new PerformativeException("Event format should be: event <description> /from <start> /to <end>");
+                throw new PerformativeException("Invalid event format, should be: event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
             }
         }
         return new Task(input);
