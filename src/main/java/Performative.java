@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -73,7 +74,11 @@ public class Performative {
                 if (by.isEmpty()) {
                     throw new PerformativeException("The deadline time cannot be empty.");
                 }
-                return new Deadline(description, by);
+                try {
+                    return new Deadline(description, by);
+                } catch (DateTimeParseException e) {
+                    throw new PerformativeException("The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
+                }
             } else {
                 throw new PerformativeException("Deadline format should be: deadline <description> /by <time>");
             }
