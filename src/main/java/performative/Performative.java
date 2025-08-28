@@ -1,6 +1,7 @@
 package performative;
 
 // Java standard library imports
+import performative.exception.PerformativeException;
 import performative.parser.Parser;
 import performative.storage.Storage;
 import performative.tasks.Task;

@@ -1,6 +1,7 @@
 package performative.parser;
 
 import performative.*;
+import performative.exception.PerformativeException;
 import performative.tasks.Deadline;
 import performative.tasks.Event;
 import performative.tasks.Task;
