@@ -1,3 +1,7 @@
+package performative.parser;
+
+import performative.*;
+
 import java.time.format.DateTimeParseException;
 
 public class Parser {
@@ -101,7 +105,7 @@ public class Parser {
                 throw new PerformativeException("The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
             }
         } else {
-            throw new PerformativeException("Deadline format should be: deadline <description> /by <time>");
+            throw new PerformativeException("performative.Deadline format should be: deadline <description> /by <time>");
         }
     }
 

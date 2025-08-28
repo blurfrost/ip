@@ -1,3 +1,5 @@
+package performative;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -64,16 +66,16 @@ public class Storage {
     private Task createTaskFromData(String type, String description, String[] parts) {
         try {
             switch (type) {
-                case "Task":
+                case "performative.Task":
                     return new Task(description);
-                case "Todo":
+                case "performative.Todo":
                     return new Todo(description);
-                case "Deadline":
+                case "performative.Deadline":
                     if (parts.length >= 4) {
                         return new Deadline(description, parts[3]);
                     }
                     break;
-                case "Event":
+                case "performative.Event":
                     if (parts.length >= 5) {
                         return new Event(description, parts[3], parts[4]);
                     }
@@ -99,3 +101,4 @@ public class Storage {
         writer.close();
     }
 }
+

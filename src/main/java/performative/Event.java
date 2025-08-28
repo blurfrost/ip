@@ -1,13 +1,18 @@
+package performative;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class Deadline extends Task {
-    private LocalDateTime by;
+public class Event extends Task {
+    private LocalDateTime start;
+    private LocalDateTime end;
 
-    public Deadline(String description, String by) throws DateTimeParseException {
+
+    public Event(String description, String start, String end) {
         super(description);
-        this.by = parseDateTime(by);
+        this.start = parseDateTime(start);
+        this.end = parseDateTime(end);
     }
 
     private LocalDateTime parseDateTime(String dateTimeString) throws DateTimeParseException {
@@ -22,13 +27,12 @@ public class Deadline extends Task {
 
     @Override
     public String toSaveFormat() {
-        // Save in original YYYY-MM-DD HHMM format
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        return "Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + by.format(saveFormatter);
+        return "performative.Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + formatDateTime(this.by) + ")";
+        return "[E]" + super.toString() + " (from: " + formatDateTime(this.start) + ", to: " + formatDateTime(this.end) + ")";
     }
 }
