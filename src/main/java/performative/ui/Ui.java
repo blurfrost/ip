@@ -1,4 +1,6 @@
-package performative;
+package performative.ui;
+
+import performative.Task;
 
 import java.util.ArrayList;
 
