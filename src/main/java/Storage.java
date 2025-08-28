@@ -31,7 +31,7 @@ public class Storage {
         ArrayList<Task> tasks = new ArrayList<>();
 
         if (!saveFile.exists()) {
-            return tasks; // Return empty list if file doesn't exist
+            return tasks;
         }
 
         Scanner fileScanner = new Scanner(saveFile);
@@ -40,7 +40,7 @@ public class Storage {
             String[] parts = data.split("; ");
 
             if (parts.length < 3) {
-                continue; // Skip malformed lines
+                continue;
             }
 
             String type = parts[0];
@@ -80,7 +80,7 @@ public class Storage {
                     break;
             }
         } catch (Exception e) {
-            // Return null for malformed tasks
+            return null;
         }
         return null;
     }
@@ -92,7 +92,7 @@ public class Storage {
     }
 
     public void saveTasks(ArrayList<Task> tasks) throws IOException {
-        FileWriter writer = new FileWriter(saveFile, false); // false = overwrite mode
+        FileWriter writer = new FileWriter(saveFile, false);
         for (Task task : tasks) {
             writer.write(task.toSaveFormat() + "\n");
         }
