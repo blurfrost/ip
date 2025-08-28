@@ -1,9 +1,9 @@
 package performative.storage;
 
-import performative.Deadline;
-import performative.Event;
-import performative.Task;
-import performative.Todo;
+import performative.tasks.Deadline;
+import performative.tasks.Event;
+import performative.tasks.Task;
+import performative.tasks.Todo;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -71,16 +71,16 @@ public class Storage {
     private Task createTaskFromData(String type, String description, String[] parts) {
         try {
             switch (type) {
-                case "performative.Task":
+                case "performative.tasks.Task":
                     return new Task(description);
-                case "performative.Todo":
+                case "performative.tasks.Todo":
                     return new Todo(description);
-                case "performative.Deadline":
+                case "performative.tasks.Deadline":
                     if (parts.length >= 4) {
                         return new Deadline(description, parts[3]);
                     }
                     break;
-                case "performative.Event":
+                case "performative.tasks.Event":
                     if (parts.length >= 5) {
                         return new Event(description, parts[3], parts[4]);
                     }

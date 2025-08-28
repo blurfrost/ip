@@ -3,6 +3,8 @@ package performative;
 // Java standard library imports
 import performative.parser.Parser;
 import performative.storage.Storage;
+import performative.tasks.Task;
+import performative.tasks.TaskList;
 import performative.ui.Ui;
 
 import java.io.IOException;

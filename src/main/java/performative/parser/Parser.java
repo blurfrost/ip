@@ -1,6 +1,10 @@
 package performative.parser;
 
 import performative.*;
+import performative.tasks.Deadline;
+import performative.tasks.Event;
+import performative.tasks.Task;
+import performative.tasks.Todo;
 import performative.ui.Ui;
 
 import java.time.format.DateTimeParseException;
@@ -106,7 +110,7 @@ public class Parser {
                 throw new PerformativeException("The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
             }
         } else {
-            throw new PerformativeException("performative.Deadline format should be: deadline <description> /by <time>");
+            throw new PerformativeException("performative.tasks.Deadline format should be: deadline <description> /by <time>");
         }
     }
 

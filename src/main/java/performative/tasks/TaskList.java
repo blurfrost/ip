@@ -1,4 +1,4 @@
-package performative;
+package performative.tasks;
 
 import java.util.ArrayList;
 
