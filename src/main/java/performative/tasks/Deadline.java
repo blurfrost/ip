@@ -1,3 +1,5 @@
+package performative.tasks;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -24,7 +26,7 @@ public class Deadline extends Task {
     public String toSaveFormat() {
         // Save in original YYYY-MM-DD HHMM format
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        return "Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + by.format(saveFormatter);
+        return "performative.tasks.Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + by.format(saveFormatter);
     }
 
     @Override

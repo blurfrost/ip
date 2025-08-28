@@ -1,4 +1,5 @@
-import java.time.LocalDate;
+package performative.tasks;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,7 +28,7 @@ public class Event extends Task {
     @Override
     public String toSaveFormat() {
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        return "Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
+        return "performative.tasks.Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
     }
 
     @Override

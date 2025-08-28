@@ -1,3 +1,5 @@
+package performative.tasks;
+
 public class Task {
     private boolean status;
     private String description;
@@ -27,7 +29,7 @@ public class Task {
 
     // express the task in a format for saving to a file
     public String toSaveFormat() {
-        return "Task; " + (status ? "Complete" : "Incomplete") + "; " + description;
+        return "performative.tasks.Task; " + (status ? "Complete" : "Incomplete") + "; " + description;
     }
 
     @Override

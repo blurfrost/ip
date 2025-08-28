@@ -1,5 +1,14 @@
+package performative;
+
+// Java standard library imports
+import performative.exception.PerformativeException;
+import performative.parser.Parser;
+import performative.storage.Storage;
+import performative.tasks.Task;
+import performative.tasks.TaskList;
+import performative.ui.Ui;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Performative {
@@ -97,7 +106,7 @@ public class Performative {
         while (true) {
             String input = scanner.nextLine();
 
-            // Use Parser to handle command parsing and execution
+            // Use performative.parser.Parser to handle command parsing and execution
             boolean shouldContinue = Parser.parseAndExecute(input, this, ui);
             if (!shouldContinue) {
                 scanner.close();
@@ -110,6 +119,6 @@ public class Performative {
     }
 
     public static void main(String[] args) {
-        new Performative("../../../data/savefile.txt").run();
+        new Performative("./data/savefile.txt").run();
     }
 }
