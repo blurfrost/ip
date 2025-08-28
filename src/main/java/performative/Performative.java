@@ -11,16 +11,31 @@ import performative.ui.Ui;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Represents the main application class for the Performative task management system.
+ * Manages the interaction between the user interface, task storage, and task operations.
+ */
 public class Performative {
     private Storage storage;
     private TaskList taskList;
     private Ui ui;
 
+    /**
+     * Constructs a new Performative application instance.
+     *
+     * @param filePath Path to the file where tasks will be saved and loaded from.
+     */
     public Performative(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
     }
 
+    /**
+     * Adds a new task based on the user input string.
+     * Parses the input, adds the task to the task list, displays confirmation, and saves to file.
+     *
+     * @param input User input string containing task details.
+     */
     public void addTask(String input) {
         try {
             Task task = Parser.parseTask(input);
@@ -38,12 +53,21 @@ public class Performative {
         }
     }
 
+    /**
+     * Deletes a task at the specified task number.
+     * Displays deletion confirmation and updates the save file.
+     *
+     * @param taskNumber The number of the task to delete (1-indexed).
+     */
     public void deleteTask(int taskNumber) {
         ui.deleteTaskMessage(taskList.deleteTask(taskNumber), taskNumber, taskList.getTaskCount());
         updateFile();
     }
 
-    // rewrite the entire save file with the current list of tasks
+    /**
+     * Updates the save file with the current list of tasks.
+     * Rewrites the entire save file with all tasks in the current task list.
+     */
     public void updateFile() {
         try {
             storage.saveTasks(taskList.getTasks());
@@ -52,6 +76,12 @@ public class Performative {
         }
     }
 
+    /**
+     * Marks a task as completed.
+     * Updates the task status, displays confirmation, and saves changes to file.
+     *
+     * @param taskNumber The number of the task to mark as done (1-indexed).
+     */
     public void markTask(int taskNumber) {
         Task task = taskList.getTask(taskNumber);
         task.markDone();
@@ -59,6 +89,12 @@ public class Performative {
         updateFile();
     }
 
+    /**
+     * Marks a task as not completed.
+     * Updates the task status, displays confirmation, and saves changes to file.
+     *
+     * @param taskNumber The number of the task to mark as undone (1-indexed).
+     */
     public void unmarkTask(int taskNumber) {
         Task task = taskList.getTask(taskNumber);
         task.markUndone();
@@ -66,14 +102,27 @@ public class Performative {
         updateFile();
     }
 
+    /**
+     * Displays all tasks in the current task list.
+     */
     public void listTasks() {
         ui.listTasks(taskList.getTasks());
     }
 
+    /**
+     * Returns the current number of tasks in the task list.
+     *
+     * @return The total count of tasks.
+     */
     public int getTaskCount() {
         return taskList.getTaskCount();
     }
 
+    /**
+     * Runs the main application loop.
+     * Initializes the save file, loads existing tasks, and handles user interactions
+     * until the user chooses to exit.
+     */
     public void run() {
         // initialize save file, or create one if it doesn't exist
         try {
@@ -118,6 +167,11 @@ public class Performative {
         }
     }
 
+    /**
+     * Main entry point for the Performative application.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         new Performative("./data/savefile.txt").run();
     }
