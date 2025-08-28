@@ -3,27 +3,22 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Performative {
-    private ArrayList<Task> tasks;
-    private int taskCount;
     private Storage storage;
+    private TaskList taskList;
     private Ui ui;
 
     public Performative(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
-        tasks = new ArrayList<>();
-        taskCount = 0;
     }
 
     public void addTask(String input) {
         try {
-            // parse input and create task object (according to type)
             Task task = Parser.parseTask(input);
-            tasks.add(task);
-            taskCount += 1;
+            taskList.addTask(task);
 
             // output to terminal
-            ui.addTaskMessage(task, taskCount);
+            ui.addTaskMessage(task, taskList.getTaskCount());
 
             // save task to file
             storage.saveTask(task);
@@ -35,75 +30,63 @@ public class Performative {
     }
 
     public void deleteTask(int taskNumber) {
-        Task removedTask = tasks.remove(taskNumber - 1);
-        taskCount -= 1;
-        ui.deleteTaskMessage(removedTask, taskNumber, taskCount);
+        ui.deleteTaskMessage(taskList.deleteTask(taskNumber), taskNumber, taskList.getTaskCount());
         updateFile();
     }
 
     // rewrite the entire save file with the current list of tasks
     public void updateFile() {
         try {
-            storage.saveTasks(tasks);
+            storage.saveTasks(taskList.getTasks());
         } catch (IOException e) {
             ui.exceptionMessage("Error writing to save file");
         }
     }
 
     public void markTask(int taskNumber) {
-        Task task = tasks.get(taskNumber - 1);
+        Task task = taskList.getTask(taskNumber);
         task.markDone();
         ui.markTaskMessage(task);
         updateFile();
     }
 
     public void unmarkTask(int taskNumber) {
-        Task task = tasks.get(taskNumber - 1);
+        Task task = taskList.getTask(taskNumber);
         task.markUndone();
         ui.markTaskMessage(task);
         updateFile();
     }
 
     public void listTasks() {
-        ui.listTasks(tasks);
+        ui.listTasks(taskList.getTasks());
     }
 
     public int getTaskCount() {
-        return taskCount;
+        return taskList.getTaskCount();
     }
 
-    public void initializeSave() throws IOException {
-        ui.detectSaveStatus(storage.fileExists());
-
-        if (!storage.fileExists()) {
-            // if save file doesn't exist, create it
-            boolean created = storage.initializeFile();
-            ui.saveCreatedStatus(created);
-            if (!created) {
-                throw new IOException("Could not create save file");
-            }
-        } else {
-            // if save file exists, load tasks from it
-            tasks = storage.loadTasks();
-            taskCount = tasks.size();
-
-            // Check for unknown task types during loading
-            for (Task task : tasks) {
-                if (task == null) {
-                    ui.unknownTaskFound("Unknown");
-                }
-            }
-
-            ui.loadTasksStatus(taskCount);
-            ui.listTasks(tasks);
-        }
-        ui.completeInitMessage();
-    }
-    
     public void run() {
         // initialize save file, or create one if it doesn't exist
         try {
-            initializeSave();
+            new TaskList();
+            ui.detectSaveStatus(storage.fileExists());
+
+            if (!storage.fileExists()) {
+                // if save file doesn't exist, create it
+                taskList = new TaskList();
+                boolean created = storage.initializeFile();
+                ui.saveCreatedStatus(created);
+                if (!created) {
+                    throw new IOException("Could not create save file");
+                }
+            } else {
+                // if save file exists, load tasks from it
+                taskList = new TaskList(storage.loadTasks());
+
+                ui.loadTasksStatus(taskList.getTaskCount());
+                ui.listTasks(taskList.getTasks());
+            }
+            ui.completeInitMessage();
         } catch (IOException e) {
             ui.cannotInitializeSaveFile();
         }
