@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,7 +18,7 @@ public class Performative {
     public void addTask(String input) {
         try {
             // parse input and create task object (according to type)
-            Task task = parseTask(input);
+            Task task = Parser.parseTask(input);
             tasks.add(task);
             taskCount += 1;
 
@@ -33,78 +32,6 @@ public class Performative {
         } catch (IOException e) {
             ui.exceptionMessage("Error writing to save file");
         }
-    }
-
-
-    public Task parseTask(String input) throws PerformativeException {
-        if (input.startsWith("todo")) {
-            if (input.equals("todo")) {
-                throw new PerformativeException("The description of a todo cannot be empty");
-            }
-            String description = input.substring(5).trim();
-            if (description.isEmpty()) {
-                throw new PerformativeException("The description of a todo cannot be empty");
-            }
-            return new Todo(description);
-        } else if (input.startsWith("deadline")) {
-            if (input.equals("deadline")) {
-                throw new PerformativeException("The description of a deadline cannot be empty");
-            }
-            String remaining = input.substring(9).trim();
-            if (remaining.isEmpty()) {
-                throw new PerformativeException("The description of a deadline cannot be empty");
-            }
-            int byIndex = remaining.indexOf(" /by ");
-            if (byIndex != -1) {
-                String description = remaining.substring(0, byIndex).trim();
-                String by = remaining.substring(byIndex + 5).trim();
-                if (description.isEmpty()) {
-                    throw new PerformativeException("The description of a deadline cannot be empty");
-                }
-                if (by.isEmpty()) {
-                    throw new PerformativeException("The deadline time cannot be empty");
-                }
-                try {
-                    return new Deadline(description, by);
-                } catch (DateTimeParseException e) {
-                    throw new PerformativeException("The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
-                }
-            } else {
-                throw new PerformativeException("Deadline format should be: deadline <description> /by <time>");
-            }
-        } else if (input.startsWith("event")) {
-            if (input.equals("event")) {
-                throw new PerformativeException("The description of an event cannot be empty");
-            }
-            String remaining = input.substring(6).trim();
-            if (remaining.isEmpty()) {
-                throw new PerformativeException("The description of an event cannot be empty");
-            }
-            int fromIndex = remaining.indexOf(" /from ");
-            int toIndex = remaining.indexOf(" /to ");
-            if (fromIndex != -1 && toIndex != -1 && toIndex > fromIndex) {
-                String description = remaining.substring(0, fromIndex).trim();
-                String from = remaining.substring(fromIndex + 7, toIndex).trim();
-                String to = remaining.substring(toIndex + 5).trim();
-                if (description.isEmpty()) {
-                    throw new PerformativeException("The description of an event cannot be empty");
-                }
-                if (from.isEmpty()) {
-                    throw new PerformativeException("The start time of an event cannot be empty");
-                }
-                if (to.isEmpty()) {
-                    throw new PerformativeException("The end time of an event cannot be empty");
-                }
-                try {
-                    return new Event(description, from, to);
-                } catch (DateTimeParseException e) {
-                    throw new PerformativeException("Invalid event format, should be: event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
-                }
-            } else {
-                throw new PerformativeException("Invalid event format, should be: event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
-            }
-        }
-        return new Task(input);
     }
 
     public void deleteTask(int taskNumber) {
@@ -135,6 +62,14 @@ public class Performative {
         task.markUndone();
         ui.markTaskMessage(task);
         updateFile();
+    }
+
+    public void listTasks() {
+        ui.listTasks(tasks);
+    }
+
+    public int getTaskCount() {
+        return taskCount;
     }
 
     public void initializeSave() throws IOException {
@@ -178,52 +113,15 @@ public class Performative {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String input = scanner.nextLine();
-            if (input.equals("bye")) {
+
+            // Use Parser to handle command parsing and execution
+            boolean shouldContinue = Parser.parseAndExecute(input, this, ui);
+            if (!shouldContinue) {
                 scanner.close();
                 ui.endChat();
                 break;
-            } else if (input.equals("list")) {
-                ui.listTasks(tasks);
-                // check for the "mark X" command
-            } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
-                String[] parts = input.split(" ");
-                if (parts.length == 2) {
-                    try {
-                        int taskNumber = Integer.parseInt(parts[1]);
-                        if (input.startsWith("mark ")) {
-                            markTask(taskNumber);
-                        } else {
-                            unmarkTask(taskNumber);
-                        }
-                    } catch (NumberFormatException e) {
-                        ui.invalidNumberFormat();
-                    } catch (IndexOutOfBoundsException e) {
-                        ui.invalidTaskNumber(taskCount);
-                    }
-                } else {
-                    ui.invalidMarkCommand();
-                }
-            } else if (input.startsWith("delete")) {
-                String[] parts = input.split(" ");
-                if (parts.length == 2) {
-                    try {
-                        int taskNumber = Integer.parseInt(parts[1]);
-                        deleteTask(taskNumber);
-                    } catch (NumberFormatException e) {
-                        ui.invalidNumberFormat();
-                    } catch (IndexOutOfBoundsException e) {
-                        ui.invalidTaskNumber(taskCount);
-                    }
-                } else {
-                    ui.invalidDeleteCommand();
-                }
-            } else if (input.startsWith("deadline")
-                    || input.startsWith("event")
-                    || input.startsWith("todo")) {
-                addTask(input);
-            } else {
-                ui.unsupportedCommand();
             }
+
             ui.printLine();
         }
     }
