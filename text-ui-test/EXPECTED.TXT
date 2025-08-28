@@ -1,5 +1,5 @@
 ────────────────────────────────────────
-Hello! I'm Performative.
+Hello! I'm performative.Performative.
 What can I do for you?
 ────────────────────────────────────────
 ────────────────────────────────────────
@@ -38,10 +38,10 @@ Error: The description of a deadline cannot be empty.
 Error: The description of an event cannot be empty.
 ────────────────────────────────────────
 ────────────────────────────────────────
-Error: Deadline format should be: deadline <description> /by <time>
+Error: performative.Deadline format should be: deadline <description> /by <time>
 ────────────────────────────────────────
 ────────────────────────────────────────
-Error: Event format should be: event <description> /from <start> /to <end>
+Error: performative.Event format should be: event <description> /from <start> /to <end>
 ────────────────────────────────────────
 ────────────────────────────────────────
 Bye. Hope to see you again soon!
