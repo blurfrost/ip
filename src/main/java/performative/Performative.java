@@ -2,6 +2,7 @@ package performative;
 
 // Java standard library imports
 import performative.parser.Parser;
+import performative.storage.Storage;
 
 import java.io.IOException;
 import java.util.Scanner;

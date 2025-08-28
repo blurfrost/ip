@@ -1,4 +1,9 @@
-package performative;
+package performative.storage;
+
+import performative.Deadline;
+import performative.Event;
+import performative.Task;
+import performative.Todo;
 
 import java.io.File;
 import java.io.FileWriter;
