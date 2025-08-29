@@ -11,14 +11,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Handles file storage operations for the Performative application.
+ * Manages loading and saving tasks to and from the file system.
+ */
 public class Storage {
     private File saveFile;
 
+    /**
+     * Constructs a new Storage instance with the specified file path.
+     *
+     * @param filePath Path to the file where tasks will be stored.
+     */
     public Storage(String filePath) {
         this.saveFile = new File(filePath);
     }
 
-
+    /**
+     * Initializes the save file by creating it if it doesn't exist.
+     * Creates any necessary parent directories.
+     *
+     * @return True if the file was successfully created or already exists, false otherwise.
+     */
     public boolean initializeFile() {
         try {
             if (!saveFile.exists()) {
@@ -30,10 +44,22 @@ public class Storage {
         }
     }
 
+    /**
+     * Checks whether the save file exists.
+     *
+     * @return True if the save file exists, false otherwise.
+     */
     public boolean fileExists() {
         return saveFile.exists();
     }
 
+    /**
+     * Loads all tasks from the save file.
+     * Parses the file content and creates appropriate task objects.
+     *
+     * @return ArrayList of Task objects loaded from the file.
+     * @throws IOException If an error occurs while reading the file.
+     */
     public ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -92,12 +118,25 @@ public class Storage {
         return null;
     }
 
+    /**
+     * Saves a single task to the save file by appending it.
+     *
+     * @param task The task to be saved to the file.
+     * @throws IOException If an error occurs while writing to the file.
+     */
     public void saveTask(Task task) throws IOException {
         FileWriter writer = new FileWriter(saveFile, true);
         writer.write(task.toSaveFormat() + "\n");
         writer.close();
     }
 
+    /**
+     * Saves all tasks to the save file by overwriting the existing content.
+     * Rewrites the entire file with the provided list of tasks.
+     *
+     * @param tasks ArrayList of tasks to be saved to the file.
+     * @throws IOException If an error occurs while writing to the file.
+     */
     public void saveTasks(ArrayList<Task> tasks) throws IOException {
         FileWriter writer = new FileWriter(saveFile, false);
         for (Task task : tasks) {
@@ -106,4 +145,3 @@ public class Storage {
         writer.close();
     }
 }
-

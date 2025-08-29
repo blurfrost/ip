@@ -10,8 +10,21 @@ import performative.ui.Ui;
 
 import java.time.format.DateTimeParseException;
 
+/**
+ * Handles parsing and execution of user commands in the Performative application.
+ * Processes user input and delegates to appropriate methods for task operations.
+ */
 public class Parser {
 
+    /**
+     * Parses user input and executes the corresponding command.
+     * Returns whether the application should continue running.
+     *
+     * @param input User input string containing the command.
+     * @param performative The main Performative application instance.
+     * @param ui The user interface instance for displaying messages.
+     * @return True if the application should continue, false if user wants to exit.
+     */
     public static boolean parseAndExecute(String input, Performative performative, Ui ui) {
         if (input.equals("bye")) {
             return false;
@@ -29,6 +42,14 @@ public class Parser {
         return true;
     }
 
+    /**
+     * Parses and executes mark or unmark commands.
+     * Handles task number validation and error cases.
+     *
+     * @param input User input string containing mark/unmark command.
+     * @param performative The main Performative application instance.
+     * @param ui The user interface instance for displaying messages.
+     */
     private static void parseMarkUnmark(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
         if (parts.length == 2) {
@@ -49,6 +70,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses and executes delete commands.
+     * Handles task number validation and error cases.
+     *
+     * @param input User input string containing delete command.
+     * @param performative The main Performative application instance.
+     * @param ui The user interface instance for displaying messages.
+     */
     private static void parseDelete(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
         if (parts.length == 2) {
@@ -65,6 +94,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses task creation input and creates the appropriate task object.
+     * Supports todo, deadline, and event task types.
+     *
+     * @param input User input string containing task details.
+     * @return The created Task object.
+     * @throws PerformativeException If the input format is invalid or required fields are missing.
+     */
     public static Task parseTask(String input) throws PerformativeException {
         if (input.startsWith("todo")) {
             return parseTodo(input);
