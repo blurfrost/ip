@@ -10,7 +10,7 @@ public class Todo extends Task {
      *
      * @param description The description of the todo task.
      */
-    public Todo (String description) {
+    public Todo(String description) {
         super(description);
     }
 
@@ -21,7 +21,7 @@ public class Todo extends Task {
      */
     @Override
     public String toSaveFormat() {
-        return "performative.tasks.Todo; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription();
+        return "performative.tasks.Todo; " + (getStatus() ? "Complete" : "Incomplete") + "; " + getDescription();
     }
 
     /**

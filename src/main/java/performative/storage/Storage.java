@@ -1,20 +1,23 @@
 package performative.storage;
 
-import performative.tasks.Deadline;
-import performative.tasks.Event;
-import performative.tasks.Task;
-import performative.tasks.Todo;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 /**
  * Handles file storage operations for the Performative application.
  * Manages loading and saving tasks to and from the file system.
  */
+
+import performative.tasks.Deadline;
+import performative.tasks.Event;
+import performative.tasks.Task;
+import performative.tasks.Todo;
+
+
 public class Storage {
     private File saveFile;
 
@@ -97,20 +100,22 @@ public class Storage {
     private Task createTaskFromData(String type, String description, String[] parts) {
         try {
             switch (type) {
-                case "performative.tasks.Task":
-                    return new Task(description);
-                case "performative.tasks.Todo":
-                    return new Todo(description);
-                case "performative.tasks.Deadline":
-                    if (parts.length >= 4) {
-                        return new Deadline(description, parts[3]);
-                    }
-                    break;
-                case "performative.tasks.Event":
-                    if (parts.length >= 5) {
-                        return new Event(description, parts[3], parts[4]);
-                    }
-                    break;
+            case "performative.tasks.Task":
+                return new Task(description);
+            case "performative.tasks.Todo":
+                return new Todo(description);
+            case "performative.tasks.Deadline":
+                if (parts.length >= 4) {
+                    return new Deadline(description, parts[3]);
+                }
+                break;
+            case "performative.tasks.Event":
+                if (parts.length >= 5) {
+                    return new Event(description, parts[3], parts[4]);
+                }
+                break;
+            default:
+                break;
             }
         } catch (Exception e) {
             return null;

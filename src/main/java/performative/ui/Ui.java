@@ -1,8 +1,8 @@
 package performative.ui;
 
-import performative.tasks.Task;
-
 import java.util.ArrayList;
+
+import performative.tasks.Task;
 
 /**
  * Handles user interface operations for the Performative application.

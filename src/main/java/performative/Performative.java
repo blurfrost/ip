@@ -1,15 +1,14 @@
 package performative;
 
-// Java standard library imports
+import java.io.IOException;
+import java.util.Scanner;
+
 import performative.exception.PerformativeException;
 import performative.parser.Parser;
 import performative.storage.Storage;
 import performative.tasks.Task;
 import performative.tasks.TaskList;
 import performative.ui.Ui;
-
-import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * Represents the main application class for the Performative task management system.
@@ -41,10 +40,10 @@ public class Performative {
             Task task = Parser.parseTask(input);
             taskList.addTask(task);
 
-            // output to terminal
+            // Output to terminal
             ui.addTaskMessage(task, taskList.getTaskCount());
 
-            // save task to file
+            // Save task to file
             storage.saveTask(task);
         } catch (PerformativeException e) {
             ui.exceptionMessage(e.getMessage());
@@ -124,13 +123,13 @@ public class Performative {
      * until the user chooses to exit.
      */
     public void run() {
-        // initialize save file, or create one if it doesn't exist
+        // Initialize save file, or create one if it doesn't exist
         try {
             new TaskList();
             ui.detectSaveStatus(storage.fileExists());
 
             if (!storage.fileExists()) {
-                // if save file doesn't exist, create it
+                // If save file doesn't exist, create it
                 taskList = new TaskList();
                 boolean created = storage.initializeFile();
                 ui.saveCreatedStatus(created);
@@ -138,7 +137,7 @@ public class Performative {
                     throw new IOException("Could not create save file");
                 }
             } else {
-                // if save file exists, load tasks from it
+                // If save file exists, load tasks from it
                 taskList = new TaskList(storage.loadTasks());
 
                 ui.loadTasksStatus(taskList.getTaskCount());
