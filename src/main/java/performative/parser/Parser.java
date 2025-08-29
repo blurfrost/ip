@@ -1,14 +1,14 @@
 package performative.parser;
 
-import performative.*;
+import java.time.format.DateTimeParseException;
+
+import performative.Performative;
 import performative.exception.PerformativeException;
 import performative.tasks.Deadline;
 import performative.tasks.Event;
 import performative.tasks.Task;
 import performative.tasks.Todo;
 import performative.ui.Ui;
-
-import java.time.format.DateTimeParseException;
 
 public class Parser {
 
