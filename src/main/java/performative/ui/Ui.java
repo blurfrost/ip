@@ -113,5 +113,31 @@ public class Ui {
         printLine();
         System.out.println(message);
     }
-}
 
+    /**
+     * Displays an error message when no keyword is provided for the find command.
+     */
+    public void emptyFindKeyword() {
+        printLine();
+        System.out.println("Please provide a keyword to search for. Correct format: find <keyword>");
+    }
+
+    /**
+     * Displays the search results for a find operation.
+     * Shows either a list of matching tasks or a message indicating no matches were found.
+     *
+     * @param matchingTasks ArrayList of tasks that contain the search keyword.
+     * @param keyword The keyword that was searched for.
+     */
+    public void showSearchResults(ArrayList<Task> matchingTasks, String keyword) {
+        printLine();
+        if (matchingTasks.isEmpty()) {
+            System.out.println("No tasks found containing the keyword: " + keyword);
+        } else {
+            System.out.println("Here are the matching tasks in your list:");
+            for (int i = 0; i < matchingTasks.size(); i++) {
+                System.out.println((i + 1) + ". " + matchingTasks.get(i));
+            }
+        }
+    }
+}

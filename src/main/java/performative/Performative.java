@@ -1,15 +1,15 @@
 package performative;
 
-// Java standard library imports
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import performative.exception.PerformativeException;
 import performative.parser.Parser;
 import performative.storage.Storage;
 import performative.tasks.Task;
 import performative.tasks.TaskList;
 import performative.ui.Ui;
-
-import java.io.IOException;
-import java.util.Scanner;
 
 public class Performative {
     private Storage storage;
@@ -68,6 +68,25 @@ public class Performative {
 
     public void listTasks() {
         ui.listTasks(taskList.getTasks());
+    }
+
+    /**
+     * Searches for tasks containing the specified keyword in their descriptions.
+     * Performs case-insensitive matching and displays the results through the UI.
+     *
+     * @param keyword The keyword to search for in task descriptions.
+     */
+    public void findTasks(String keyword) {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+        ArrayList<Task> allTasks = taskList.getTasks();
+
+        for (Task task : allTasks) {
+            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
+                matchingTasks.add(task);
+            }
+        }
+
+        ui.showSearchResults(matchingTasks, keyword);
     }
 
     public int getTaskCount() {
