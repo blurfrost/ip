@@ -1,8 +1,8 @@
 package performative.ui;
 
-import performative.tasks.Task;
-
 import java.util.ArrayList;
+
+import performative.tasks.Task;
 
 public class Ui {
     public Ui() {
@@ -114,4 +114,3 @@ public class Ui {
         System.out.println(message);
     }
 }
-
