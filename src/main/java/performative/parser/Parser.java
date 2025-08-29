@@ -10,6 +10,7 @@ import performative.tasks.Task;
 import performative.tasks.Todo;
 import performative.ui.Ui;
 
+
 /**
  * Handles parsing and execution of user commands in the Performative application.
  * Processes user input and delegates to appropriate methods for task operations.
@@ -34,6 +35,8 @@ public class Parser {
             parseMarkUnmark(input, performative, ui);
         } else if (input.startsWith("delete")) {
             parseDelete(input, performative, ui);
+        } else if (input.startsWith("find ")) {
+            parseFind(input, performative, ui);
         } else if (input.startsWith("deadline") || input.startsWith("event") || input.startsWith("todo")) {
             performative.addTask(input);
         } else {
@@ -95,6 +98,7 @@ public class Parser {
     }
 
     /**
+<<<<<<< HEAD
      * Parses task creation input and creates the appropriate task object.
      * Supports todo, deadline, and event task types.
      *
@@ -111,6 +115,23 @@ public class Parser {
             return parseEvent(input);
         }
         return new Task(input);
+    }
+
+    /**
+     * Parses and executes find commands.
+     * Extracts the keyword from the input and validates it before searching.
+     *
+     * @param input User input string containing find command.
+     * @param performative The main Performative application instance.
+     * @param ui The user interface instance for displaying messages.
+     */
+    private static void parseFind(String input, Performative performative, Ui ui) {
+        String keyword = input.substring(5).trim();
+        if (keyword.isEmpty()) {
+            ui.emptyFindKeyword();
+        } else {
+            performative.findTasks(keyword);
+        }
     }
 
     private static Task parseTodo(String input) throws PerformativeException {

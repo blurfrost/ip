@@ -1,6 +1,7 @@
 package performative;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import performative.exception.PerformativeException;
@@ -115,6 +116,25 @@ public class Performative {
      */
     public int getTaskCount() {
         return taskList.getTaskCount();
+    }
+
+    /**
+     * Searches for tasks containing the specified keyword in their descriptions.
+     * Performs case-insensitive matching and displays the results through the UI.
+     *
+     * @param keyword The keyword to search for in task descriptions.
+     */
+    public void findTasks(String keyword) {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+        ArrayList<Task> allTasks = taskList.getTasks();
+
+        for (Task task : allTasks) {
+            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
+                matchingTasks.add(task);
+            }
+        }
+
+        ui.showSearchResults(matchingTasks, keyword);
     }
 
     /**
