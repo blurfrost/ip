@@ -8,7 +8,6 @@ public class Event extends Task {
     private LocalDateTime start;
     private LocalDateTime end;
 
-
     public Event(String description, String start, String end) {
         super(description);
         this.start = parseDateTime(start);
@@ -28,11 +27,13 @@ public class Event extends Task {
     @Override
     public String toSaveFormat() {
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        return "performative.tasks.Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; " + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
+        return "performative.tasks.Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
+                + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
     }
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + formatDateTime(this.start) + ", to: " + formatDateTime(this.end) + ")";
+        return "[E]" + super.toString() + " (from: " + formatDateTime(this.start) + ", to: "
+                + formatDateTime(this.end) + ")";
     }
 }
