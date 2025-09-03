@@ -58,7 +58,7 @@ public class Event extends Task {
     @Override
     public String toSaveFormat() {
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        return "performative.tasks.Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
+        return "Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
                 + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
     }
 

@@ -58,7 +58,7 @@ public class Task {
      * @return String representation for file storage.
      */
     public String toSaveFormat() {
-        return "performative.tasks.Task; " + (status ? "Complete" : "Incomplete") + "; " + description;
+        return "Task; " + (status ? "Complete" : "Incomplete") + "; " + description;
     }
 
     /**

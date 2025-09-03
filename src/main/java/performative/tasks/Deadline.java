@@ -55,7 +55,7 @@ public class Deadline extends Task {
     public String toSaveFormat() {
         // Save in original YYYY-MM-DD HHMM format
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        return "performative.tasks.Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
+        return "Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
                 + super.getDescription() + "; " + by.format(saveFormatter);
     }
 

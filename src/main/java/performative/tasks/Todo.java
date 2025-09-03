@@ -21,7 +21,7 @@ public class Todo extends Task {
      */
     @Override
     public String toSaveFormat() {
-        return "performative.tasks.Todo; " + (getStatus() ? "Complete" : "Incomplete") + "; " + getDescription();
+        return "Todo; " + (getStatus() ? "Complete" : "Incomplete") + "; " + getDescription();
     }
 
     /**
