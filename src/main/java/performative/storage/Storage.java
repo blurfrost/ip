@@ -38,6 +38,12 @@ public class Storage {
      */
     public boolean initializeFile() {
         try {
+            // Create parent directories if they don't exist
+            File parentDir = saveFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+
             if (!saveFile.exists()) {
                 return saveFile.createNewFile();
             }
