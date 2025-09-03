@@ -38,6 +38,12 @@ public class Storage {
      */
     public boolean initializeFile() {
         try {
+            // Create parent directories if they don't exist
+            File parentDir = saveFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+
             if (!saveFile.exists()) {
                 return saveFile.createNewFile();
             }
@@ -100,16 +106,16 @@ public class Storage {
     private Task createTaskFromData(String type, String description, String[] parts) {
         try {
             switch (type) {
-            case "performative.tasks.Task":
+            case "Task":
                 return new Task(description);
-            case "performative.tasks.Todo":
+            case "Todo":
                 return new Todo(description);
-            case "performative.tasks.Deadline":
+            case "Deadline":
                 if (parts.length >= 4) {
                     return new Deadline(description, parts[3]);
                 }
                 break;
-            case "performative.tasks.Event":
+            case "Event":
                 if (parts.length >= 5) {
                     return new Event(description, parts[3], parts[4]);
                 }
