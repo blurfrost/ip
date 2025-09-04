@@ -2,7 +2,6 @@ package performative;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import performative.exception.PerformativeException;
 import performative.parser.Parser;
@@ -32,10 +31,10 @@ public class Performative {
     }
 
     /**
-     * Initializes the application for GUI mode.
-     * Sets up the task list and storage without running the CLI loop.
+     * Initializes the application.
+     * Sets up the task list and storage.
      */
-    private void initializeForGui() {
+    private void initialize() {
         if (isInitialized) {
             return;
         }
@@ -95,11 +94,11 @@ public class Performative {
      * Updates the save file with the current list of tasks.
      * Rewrites the entire save file with all tasks in the current task list.
      */
-    public void updateFile() {
+    private void updateFile() {
         try {
             storage.saveTasks(taskList.getTasks());
         } catch (IOException e) {
-            ui.exceptionMessage("Error writing to save file");
+
         }
     }
 
@@ -178,58 +177,13 @@ public class Performative {
     }
 
     /**
-     * Runs the main application loop.
-     * Initializes the save file, loads existing tasks, and handles user interactions
-     * until the user chooses to exit.
+     * Handles user input and returns appropriate response for GUI.
+     *
+     * @param input User input string.
+     * @return Response string to be displayed in GUI.
      */
-    public void run() {
-        // Initialize save file, or create one if it doesn't exist
-        try {
-            new TaskList();
-            ui.detectSaveStatus(storage.fileExists());
-
-            if (!storage.fileExists()) {
-                // If save file doesn't exist, create it
-                taskList = new TaskList();
-                boolean created = storage.initializeFile();
-                ui.saveCreatedStatus(created);
-                if (!created) {
-                    throw new IOException("Could not create save file");
-                }
-            } else {
-                // If save file exists, load tasks from it
-                taskList = new TaskList(storage.loadTasks());
-
-                ui.loadTasksStatus(taskList.getTaskCount());
-                ui.listTasks(taskList.getTasks());
-            }
-            ui.completeInitMessage();
-        } catch (IOException e) {
-            ui.cannotInitializeSaveFile();
-        }
-
-        ui.greetUser();
-
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String input = scanner.nextLine();
-
-            if (input.equals("bye")) {
-                scanner.close();
-                ui.endChat();
-                break;
-            }
-
-            // Get response from GUI-compatible parsing and display it
-            String response = Parser.parseAndExecute(input, this, ui);
-            ui.printLine();
-            System.out.println(response);
-            ui.printLine();
-        }
-    }
-
     public String getResponse(String input) {
-        initializeForGui();
+        initialize();
 
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
@@ -241,10 +195,11 @@ public class Performative {
 
     /**
      * Main entry point for the Performative application.
+     * Launches the GUI application.
      *
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
-        new Performative("./data/savefile.txt").run();
+        System.out.println("Hello!");
     }
 }
