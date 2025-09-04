@@ -19,6 +19,7 @@ public class Performative {
     private Storage storage;
     private TaskList taskList;
     private Ui ui;
+    private boolean isInitialized = false;
 
     /**
      * Constructs a new Performative application instance.
@@ -31,37 +32,63 @@ public class Performative {
     }
 
     /**
+     * Initializes the application for GUI mode.
+     * Sets up the task list and storage without running the CLI loop.
+     */
+    private void initializeForGui() {
+        if (isInitialized) {
+            return;
+        }
+
+        try {
+            if (!storage.fileExists()) {
+                taskList = new TaskList();
+                storage.initializeFile();
+            } else {
+                taskList = new TaskList(storage.loadTasks());
+            }
+            isInitialized = true;
+        } catch (IOException e) {
+            taskList = new TaskList();
+            isInitialized = true;
+        }
+    }
+
+    /**
      * Adds a new task based on the user input string.
-     * Parses the input, adds the task to the task list, displays confirmation, and saves to file.
+     * Returns a confirmation message string.
      *
      * @param input User input string containing task details.
+     * @return Confirmation message string.
      */
-    public void addTask(String input) {
+    public String addTask(String input) {
         try {
             Task task = Parser.parseTask(input);
             taskList.addTask(task);
-
-            // Output to terminal
-            ui.addTaskMessage(task, taskList.getTaskCount());
-
-            // Save task to file
             storage.saveTask(task);
+            return ui.getAddTaskMessage(task, taskList.getTaskCount());
         } catch (PerformativeException e) {
-            ui.exceptionMessage(e.getMessage());
+            return e.getMessage();
         } catch (IOException e) {
-            ui.exceptionMessage("Error writing to save file");
+            return "Error writing to save file";
         }
     }
 
     /**
      * Deletes a task at the specified task number.
-     * Displays deletion confirmation and updates the save file.
+     * Returns a confirmation message string.
      *
      * @param taskNumber The number of the task to delete (1-indexed).
+     * @return Confirmation message string.
      */
-    public void deleteTask(int taskNumber) {
-        ui.deleteTaskMessage(taskList.deleteTask(taskNumber), taskNumber, taskList.getTaskCount());
-        updateFile();
+    public String deleteTask(int taskNumber) {
+        try {
+            Task deletedTask = taskList.deleteTask(taskNumber);
+            updateFile();
+            return ui.getDeleteTaskMessage(deletedTask, taskNumber, taskList.getTaskCount());
+        } catch (IndexOutOfBoundsException e) {
+            return ui.getInvalidTaskNumberMessage(taskList.getTaskCount());
+        }
     }
 
     /**
@@ -78,35 +105,47 @@ public class Performative {
 
     /**
      * Marks a task as completed.
-     * Updates the task status, displays confirmation, and saves changes to file.
+     * Returns a confirmation message string.
      *
      * @param taskNumber The number of the task to mark as done (1-indexed).
+     * @return Confirmation message string.
      */
-    public void markTask(int taskNumber) {
-        Task task = taskList.getTask(taskNumber);
-        task.markDone();
-        ui.markTaskMessage(task);
-        updateFile();
+    public String markTask(int taskNumber) {
+        try {
+            Task task = taskList.getTask(taskNumber);
+            task.markDone();
+            updateFile();
+            return ui.getMarkTaskMessage(task);
+        } catch (IndexOutOfBoundsException e) {
+            return ui.getInvalidTaskNumberMessage(taskList.getTaskCount());
+        }
     }
 
     /**
      * Marks a task as not completed.
-     * Updates the task status, displays confirmation, and saves changes to file.
+     * Returns a confirmation message string.
      *
      * @param taskNumber The number of the task to mark as undone (1-indexed).
+     * @return Confirmation message string.
      */
-    public void unmarkTask(int taskNumber) {
-        Task task = taskList.getTask(taskNumber);
-        task.markUndone();
-        ui.markTaskMessage(task);
-        updateFile();
+    public String unmarkTask(int taskNumber) {
+        try {
+            Task task = taskList.getTask(taskNumber);
+            task.markUndone();
+            updateFile();
+            return ui.getMarkTaskMessage(task);
+        } catch (IndexOutOfBoundsException e) {
+            return ui.getInvalidTaskNumberMessage(taskList.getTaskCount());
+        }
     }
 
     /**
-     * Displays all tasks in the current task list.
+     * Returns all tasks in the current task list.
+     *
+     * @return Formatted task list string.
      */
-    public void listTasks() {
-        ui.listTasks(taskList.getTasks());
+    public String listTasks() {
+        return ui.getListTasksMessage(taskList.getTasks());
     }
 
     /**
@@ -119,12 +158,13 @@ public class Performative {
     }
 
     /**
-     * Searches for tasks containing the specified keyword in their descriptions.
-     * Performs case-insensitive matching and displays the results through the UI.
+     * Searches for tasks containing the specified keyword.
+     * Returns search results as a formatted string.
      *
      * @param keyword The keyword to search for in task descriptions.
+     * @return Search results string.
      */
-    public void findTasks(String keyword) {
+    public String findTasks(String keyword) {
         ArrayList<Task> matchingTasks = new ArrayList<>();
         ArrayList<Task> allTasks = taskList.getTasks();
 
@@ -134,7 +174,7 @@ public class Performative {
             }
         }
 
-        ui.showSearchResults(matchingTasks, keyword);
+        return ui.getSearchResultsMessage(matchingTasks, keyword);
     }
 
     /**
@@ -174,20 +214,29 @@ public class Performative {
         while (true) {
             String input = scanner.nextLine();
 
-            // Use performative.parser.Parser to handle command parsing and execution
-            boolean shouldContinue = Parser.parseAndExecute(input, this, ui);
-            if (!shouldContinue) {
+            if (input.equals("bye")) {
                 scanner.close();
                 ui.endChat();
                 break;
             }
 
+            // Get response from GUI-compatible parsing and display it
+            String response = Parser.parseAndExecute(input, this, ui);
+            ui.printLine();
+            System.out.println(response);
             ui.printLine();
         }
     }
 
     public String getResponse(String input) {
-        return "Performative heard: " + input;
+        initializeForGui();
+
+        String trimmedInput = input.trim();
+        if (trimmedInput.isEmpty()) {
+            return ui.getUnsupportedCommandMessage();
+        }
+
+        return Parser.parseAndExecute(trimmedInput, this, ui);
     }
 
     /**

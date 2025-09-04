@@ -19,86 +19,86 @@ public class Parser {
 
     /**
      * Parses user input and executes the corresponding command.
-     * Returns whether the application should continue running.
+     * Returns a string response for the GUI.
      *
      * @param input User input string containing the command.
      * @param performative The main Performative application instance.
-     * @param ui The user interface instance for displaying messages.
-     * @return True if the application should continue, false if user wants to exit.
+     * @param ui The user interface instance for generating messages.
+     * @return String response to be displayed in the GUI.
      */
-    public static boolean parseAndExecute(String input, Performative performative, Ui ui) {
+    public static String parseAndExecute(String input, Performative performative, Ui ui) {
         if (input.equals("bye")) {
-            return false;
+            return ui.getByeMessage();
         } else if (input.equals("list")) {
-            performative.listTasks();
+            return performative.listTasks();
         } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
-            parseMarkUnmark(input, performative, ui);
+            return parseMarkUnmark(input, performative, ui);
         } else if (input.startsWith("delete")) {
-            parseDelete(input, performative, ui);
+            return parseDelete(input, performative, ui);
         } else if (input.startsWith("find ")) {
-            parseFind(input, performative, ui);
+            return parseFind(input, performative, ui);
         } else if (input.startsWith("deadline") || input.startsWith("event") || input.startsWith("todo")) {
-            performative.addTask(input);
+            return performative.addTask(input);
         } else {
-            ui.unsupportedCommand();
+            return ui.getUnsupportedCommandMessage();
         }
-        return true;
     }
 
     /**
      * Parses and executes mark or unmark commands.
-     * Handles task number validation and error cases.
+     * Returns a string response for the GUI.
      *
      * @param input User input string containing mark/unmark command.
      * @param performative The main Performative application instance.
-     * @param ui The user interface instance for displaying messages.
+     * @param ui The user interface instance for generating messages.
+     * @return String response for the GUI.
      */
-    private static void parseMarkUnmark(String input, Performative performative, Ui ui) {
+    private static String parseMarkUnmark(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
         if (parts.length == 2) {
             try {
                 int taskNumber = Integer.parseInt(parts[1]);
                 if (input.startsWith("mark ")) {
-                    performative.markTask(taskNumber);
+                    return performative.markTask(taskNumber);
                 } else {
-                    performative.unmarkTask(taskNumber);
+                    return performative.unmarkTask(taskNumber);
                 }
             } catch (NumberFormatException e) {
-                ui.invalidNumberFormat();
+                return ui.getInvalidNumberFormatMessage();
             } catch (IndexOutOfBoundsException e) {
-                ui.invalidTaskNumber(performative.getTaskCount());
+                return ui.getInvalidTaskNumberMessage(performative.getTaskCount());
             }
         } else {
-            ui.invalidMarkCommand();
+            return ui.getInvalidMarkCommandMessage();
         }
     }
 
     /**
      * Parses and executes delete commands.
-     * Handles task number validation and error cases.
+     * Returns a string response for the GUI.
      *
      * @param input User input string containing delete command.
      * @param performative The main Performative application instance.
-     * @param ui The user interface instance for displaying messages.
+     * @param ui The user interface instance for generating messages.
+     * @return String response for the GUI.
      */
-    private static void parseDelete(String input, Performative performative, Ui ui) {
+    private static String parseDelete(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
         if (parts.length == 2) {
             try {
                 int taskNumber = Integer.parseInt(parts[1]);
-                performative.deleteTask(taskNumber);
+                return performative.deleteTask(taskNumber);
             } catch (NumberFormatException e) {
-                ui.invalidNumberFormat();
+                return ui.getInvalidNumberFormatMessage();
             } catch (IndexOutOfBoundsException e) {
-                ui.invalidTaskNumber(performative.getTaskCount());
+                return ui.getInvalidTaskNumberMessage(performative.getTaskCount());
             }
         } else {
-            ui.invalidDeleteCommand();
+            return ui.getInvalidDeleteCommandMessage();
         }
     }
 
     /**
-<<<<<<< HEAD
      * Parses task creation input and creates the appropriate task object.
      * Supports todo, deadline, and event task types.
      *
@@ -119,18 +119,19 @@ public class Parser {
 
     /**
      * Parses and executes find commands.
-     * Extracts the keyword from the input and validates it before searching.
+     * Returns a string response for the GUI.
      *
      * @param input User input string containing find command.
      * @param performative The main Performative application instance.
-     * @param ui The user interface instance for displaying messages.
+     * @param ui The user interface instance for generating messages.
+     * @return String response for the GUI.
      */
-    private static void parseFind(String input, Performative performative, Ui ui) {
+    private static String parseFind(String input, Performative performative, Ui ui) {
         String keyword = input.substring(5).trim();
         if (keyword.isEmpty()) {
-            ui.emptyFindKeyword();
+            return ui.getEmptyFindKeywordMessage();
         } else {
-            performative.findTasks(keyword);
+            return performative.findTasks(keyword);
         }
     }
 
