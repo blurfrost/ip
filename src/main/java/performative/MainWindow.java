@@ -20,10 +20,10 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private Performative duke;
+    private Performative performative;
 
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/kinglaugh.png"));
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/kingsad.png"));
+    private Image performativeImage = new Image(this.getClass().getResourceAsStream("/images/kingsad.png"));
 
     @FXML
     public void initialize() {
@@ -31,8 +31,8 @@ public class MainWindow extends AnchorPane {
     }
 
     /** Injects the Performative instance */
-    public void setPerformative(Performative d) {
-        duke = d;
+    public void setPerformative(Performative p) {
+        performative = p;
         // Add initial greeting message when Performative is set
         showGreeting();
     }
@@ -41,9 +41,9 @@ public class MainWindow extends AnchorPane {
      * Displays the initial greeting message from Performative.
      */
     private void showGreeting() {
-        String greetingMessage = "Hello! I'm Performative.\nWhat can I do for you?";
+        String greetingMessage = "Hello! I'm Performative. How can I assist you today?";
         dialogContainer.getChildren().add(
-                DialogBox.getPerformativeDialog(greetingMessage, dukeImage)
+                DialogBox.getPerformativeDialog(greetingMessage, performativeImage)
         );
     }
 
@@ -54,10 +54,10 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
-        String response = duke.getResponse(input);
+        String response = performative.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getPerformativeDialog(response, dukeImage)
+                DialogBox.getPerformativeDialog(response, performativeImage)
         );
         userInput.clear();
     }
