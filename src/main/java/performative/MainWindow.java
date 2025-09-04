@@ -33,6 +33,18 @@ public class MainWindow extends AnchorPane {
     /** Injects the Performative instance */
     public void setPerformative(Performative d) {
         duke = d;
+        // Add initial greeting message when Performative is set
+        showGreeting();
+    }
+
+    /**
+     * Displays the initial greeting message from Performative.
+     */
+    private void showGreeting() {
+        String greetingMessage = "Hello! I'm Performative.\nWhat can I do for you?";
+        dialogContainer.getChildren().add(
+                DialogBox.getPerformativeDialog(greetingMessage, dukeImage)
+        );
     }
 
     /**
