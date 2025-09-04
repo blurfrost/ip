@@ -186,6 +186,10 @@ public class Performative {
         }
     }
 
+    public String getResponse(String input) {
+        return "Performative heard: " + input;
+    }
+
     /**
      * Main entry point for the Performative application.
      *
