@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private Performative duke = new Performative("./data/savefile.txt");
+    private Performative performative = new Performative("./data/savefile.txt");
 
     @Override
     public void start(Stage stage) {
@@ -22,7 +22,8 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setPerformative(duke);  // inject the Duke instance
+            // inject the Performative instance
+            fxmlLoader.<MainWindow>getController().setPerformative(performative);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
