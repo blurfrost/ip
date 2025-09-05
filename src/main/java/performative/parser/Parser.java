@@ -167,10 +167,12 @@ public class Parser {
             try {
                 return new Deadline(description, by);
             } catch (DateTimeParseException e) {
-                throw new PerformativeException("The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
+                throw new PerformativeException(
+                        "The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
             }
         } else {
-            throw new PerformativeException("performative.tasks.Deadline format should be: deadline <description> /by <time>");
+            throw new PerformativeException(
+                    "performative.tasks.Deadline format should be: deadline <description> /by <time>");
         }
     }
 
@@ -200,10 +202,12 @@ public class Parser {
             try {
                 return new Event(description, from, to);
             } catch (DateTimeParseException e) {
-                throw new PerformativeException("Invalid event format, should be: event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+                throw new PerformativeException("Invalid event format, should be: "
+                        + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
             }
         } else {
-            throw new PerformativeException("Invalid event format, should be: event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+            throw new PerformativeException("Invalid event format, should be: "
+                    + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
         }
     }
 }
