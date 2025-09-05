@@ -6,23 +6,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
-/**
- * Handles file storage operations for the Performative application.
- * Manages loading and saving tasks to and from the file system.
- */
-
 import performative.tasks.Deadline;
 import performative.tasks.Event;
 import performative.tasks.Task;
 import performative.tasks.Todo;
 
-
+/**
+ * Handles file storage operations for the Performative application.
+ * Manages loading and saving tasks to and from the file system.
+ */
 public class Storage {
     private File saveFile;
 
     /**
-     * Constructs a new Storage instance with the specified file path.
+     * Creates a new Storage instance with the specified file path.
      *
      * @param filePath Path to the file where tasks will be stored.
      */
