@@ -6,9 +6,15 @@ import performative.tasks.Task;
 
 /**
  * Handles user interface operations for the Performative application.
- * Manages all user interaction messages for GUI display.
+ * Manages formatting and generation of user messages and responses.
  */
 public class Ui {
+
+    // Named constants to replace magic numbers
+    private static final int DISPLAY_NUMBER_OFFSET = 1; // For converting 0-indexed to 1-indexed display
+    private static final int LAST_ITEM_OFFSET = 1;
+    private static final int MINIMUM_TASK_NUMBER = 1;
+
     /**
      * Constructs a new Ui instance.
      */
@@ -70,8 +76,8 @@ public class Ui {
 
         StringBuilder sb = new StringBuilder("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
-            sb.append((i + 1)).append(". ").append(tasks.get(i));
-            if (i < tasks.size() - 1) {
+            sb.append((i + DISPLAY_NUMBER_OFFSET)).append(". ").append(tasks.get(i));
+            if (i < tasks.size() - LAST_ITEM_OFFSET) {
                 sb.append("\n");
             }
         }
@@ -91,8 +97,8 @@ public class Ui {
         } else {
             StringBuilder sb = new StringBuilder("Here are the matching tasks in your list:\n");
             for (int i = 0; i < matchingTasks.size(); i++) {
-                sb.append((i + 1)).append(". ").append(matchingTasks.get(i));
-                if (i < matchingTasks.size() - 1) {
+                sb.append((i + DISPLAY_NUMBER_OFFSET)).append(". ").append(matchingTasks.get(i));
+                if (i < matchingTasks.size() - LAST_ITEM_OFFSET) {
                     sb.append("\n");
                 }
             }
@@ -116,7 +122,7 @@ public class Ui {
      * @return Error message string.
      */
     public String getInvalidTaskNumberMessage(int taskCount) {
-        return "Invalid task number. Input a task from 1 to " + taskCount;
+        return "Invalid task number. Input a task from " + MINIMUM_TASK_NUMBER + " to " + taskCount;
     }
 
     /**
