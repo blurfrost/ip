@@ -10,12 +10,16 @@ public class TaskList {
     private ArrayList<Task> tasks;
     private int taskCount;
 
+    // Named constants to replace magic numbers
+    private static final int INITIAL_TASK_COUNT = 0;
+    private static final int TASK_NUMBER_OFFSET = 1; // For converting 1-indexed to 0-indexed
+
     /**
      * Constructs a new empty TaskList.
      */
     public TaskList() {
         this.tasks = new ArrayList<>();
-        this.taskCount = 0;
+        this.taskCount = INITIAL_TASK_COUNT;
     }
 
     /**
@@ -35,7 +39,7 @@ public class TaskList {
      * @return The Task object at the specified position.
      */
     public Task getTask(int taskNumber) {
-        return this.tasks.get(taskNumber - 1);
+        return this.tasks.get(taskNumber - TASK_NUMBER_OFFSET);
     }
 
     /**
@@ -75,7 +79,7 @@ public class TaskList {
      * @return The removed Task object.
      */
     public Task deleteTask(int taskNumber) {
-        Task removedTask = tasks.remove(taskNumber - 1);
+        Task removedTask = tasks.remove(taskNumber - TASK_NUMBER_OFFSET);
         this.taskCount -= 1;
         return removedTask;
     }
