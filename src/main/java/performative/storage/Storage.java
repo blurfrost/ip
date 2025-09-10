@@ -18,7 +18,6 @@ import performative.tasks.Todo;
 public class Storage {
     private File saveFile;
 
-    // Named constants to replace magic numbers
     private static final int MINIMUM_TASK_PARTS = 3;
     private static final int TYPE_INDEX = 0;
     private static final int STATUS_INDEX = 1;

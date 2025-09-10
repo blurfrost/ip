@@ -17,7 +17,6 @@ import performative.ui.Ui;
  */
 public class Parser {
 
-    // Named constants to replace magic numbers
     private static final int EXPECTED_COMMAND_PARTS = 2;
     private static final int TASK_NUMBER_INDEX = 1;
     private static final int FIND_KEYWORD_START_INDEX = 5;

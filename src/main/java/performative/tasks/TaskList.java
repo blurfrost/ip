@@ -10,9 +10,8 @@ public class TaskList {
     private ArrayList<Task> tasks;
     private int taskCount;
 
-    // Named constants to replace magic numbers
     private static final int INITIAL_TASK_COUNT = 0;
-    private static final int TASK_NUMBER_OFFSET = 1; // For converting 1-indexed to 0-indexed
+    private static final int TASK_NUMBER_OFFSET = 1;
 
     /**
      * Constructs a new empty TaskList.

@@ -10,8 +10,7 @@ import performative.tasks.Task;
  */
 public class Ui {
 
-    // Named constants to replace magic numbers
-    private static final int DISPLAY_NUMBER_OFFSET = 1; // For converting 0-indexed to 1-indexed display
+    private static final int DISPLAY_NUMBER_OFFSET = 1;
     private static final int LAST_ITEM_OFFSET = 1;
     private static final int MINIMUM_TASK_NUMBER = 1;
 
