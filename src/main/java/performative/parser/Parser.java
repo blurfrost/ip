@@ -17,6 +17,17 @@ import performative.ui.Ui;
  */
 public class Parser {
 
+    private static final int EXPECTED_COMMAND_PARTS = 2;
+    private static final int TASK_NUMBER_INDEX = 1;
+    private static final int FIND_KEYWORD_START_INDEX = 5;
+    private static final int TODO_DESCRIPTION_START_INDEX = 5;
+    private static final int DEADLINE_PREFIX_LENGTH = 9;
+    private static final int EVENT_PREFIX_LENGTH = 6;
+    private static final int BY_KEYWORD_LENGTH = 5;
+    private static final int FROM_KEYWORD_LENGTH = 7;
+    private static final int TO_KEYWORD_LENGTH = 5;
+    private static final int NOT_FOUND = -1;
+
     /**
      * Parses user input and executes the corresponding command.
      * Returns a string response for the GUI.
@@ -55,9 +66,9 @@ public class Parser {
      */
     private static String parseMarkUnmark(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
-        if (parts.length == 2) {
+        if (parts.length == EXPECTED_COMMAND_PARTS) {
             try {
-                int taskNumber = Integer.parseInt(parts[1]);
+                int taskNumber = Integer.parseInt(parts[TASK_NUMBER_INDEX]);
                 if (input.startsWith("mark ")) {
                     return performative.markTask(taskNumber);
                 } else {
@@ -84,9 +95,9 @@ public class Parser {
      */
     private static String parseDelete(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
-        if (parts.length == 2) {
+        if (parts.length == EXPECTED_COMMAND_PARTS) {
             try {
-                int taskNumber = Integer.parseInt(parts[1]);
+                int taskNumber = Integer.parseInt(parts[TASK_NUMBER_INDEX]);
                 return performative.deleteTask(taskNumber);
             } catch (NumberFormatException e) {
                 return ui.getInvalidNumberFormatMessage();
@@ -127,7 +138,7 @@ public class Parser {
      * @return String response for the GUI.
      */
     private static String parseFind(String input, Performative performative, Ui ui) {
-        String keyword = input.substring(5).trim();
+        String keyword = input.substring(FIND_KEYWORD_START_INDEX).trim();
         if (keyword.isEmpty()) {
             return ui.getEmptyFindKeywordMessage();
         } else {
@@ -139,7 +150,7 @@ public class Parser {
         if (input.equals("todo")) {
             throw new PerformativeException("The description of a todo cannot be empty");
         }
-        String description = input.substring(5).trim();
+        String description = input.substring(TODO_DESCRIPTION_START_INDEX).trim();
         if (description.isEmpty()) {
             throw new PerformativeException("The description of a todo cannot be empty");
         }
@@ -147,67 +158,102 @@ public class Parser {
     }
 
     private static Task parseDeadline(String input) throws PerformativeException {
-        if (input.equals("deadline")) {
-            throw new PerformativeException("The description of a deadline cannot be empty");
-        }
-        String remaining = input.substring(9).trim();
-        if (remaining.isEmpty()) {
-            throw new PerformativeException("The description of a deadline cannot be empty");
-        }
+        validateDeadlineInput(input);
+        String remaining = extractRemainingContent(input, DEADLINE_PREFIX_LENGTH);
+
         int byIndex = remaining.indexOf(" /by ");
-        if (byIndex != -1) {
-            String description = remaining.substring(0, byIndex).trim();
-            String by = remaining.substring(byIndex + 5).trim();
-            if (description.isEmpty()) {
-                throw new PerformativeException("The description of a deadline cannot be empty");
-            }
-            if (by.isEmpty()) {
-                throw new PerformativeException("The deadline time cannot be empty");
-            }
-            try {
-                return new Deadline(description, by);
-            } catch (DateTimeParseException e) {
-                throw new PerformativeException(
-                        "The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
-            }
-        } else {
+        if (byIndex == NOT_FOUND) {
             throw new PerformativeException(
-                    "performative.tasks.Deadline format should be: deadline <description> /by <time>");
+                    "Deadline format should be: deadline <description> /by <time>");
+        }
+
+        String description = remaining.substring(0, byIndex).trim();
+        String by = remaining.substring(byIndex + BY_KEYWORD_LENGTH).trim();
+
+        validateDeadlineComponents(description, by);
+
+        try {
+            return new Deadline(description, by);
+        } catch (DateTimeParseException e) {
+            throw new PerformativeException(
+                    "The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
         }
     }
 
     private static Task parseEvent(String input) throws PerformativeException {
+        validateEventInput(input);
+        String remaining = extractRemainingContent(input, EVENT_PREFIX_LENGTH);
+
+        int fromIndex = remaining.indexOf(" /from ");
+        int toIndex = remaining.indexOf(" /to ");
+
+        if (!isValidEventFormat(fromIndex, toIndex)) {
+            throw new PerformativeException("Invalid event format, should be: "
+                    + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+        }
+
+        String description = remaining.substring(0, fromIndex).trim();
+        String from = remaining.substring(fromIndex + FROM_KEYWORD_LENGTH, toIndex).trim();
+        String to = remaining.substring(toIndex + TO_KEYWORD_LENGTH).trim();
+
+        validateEventComponents(description, from, to);
+
+        try {
+            return new Event(description, from, to);
+        } catch (DateTimeParseException e) {
+            throw new PerformativeException("Invalid event format, should be: "
+                    + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+        }
+    }
+
+    private static void validateDeadlineInput(String input) throws PerformativeException {
+        if (input.equals("deadline")) {
+            throw new PerformativeException("The description of a deadline cannot be empty");
+        }
+    }
+
+    private static void validateEventInput(String input) throws PerformativeException {
         if (input.equals("event")) {
             throw new PerformativeException("The description of an event cannot be empty");
         }
-        String remaining = input.substring(6).trim();
+    }
+
+    private static String extractRemainingContent(String input, int prefixLength) throws PerformativeException {
+        String remaining = input.substring(prefixLength).trim();
         if (remaining.isEmpty()) {
+            String taskType = prefixLength == DEADLINE_PREFIX_LENGTH ? "deadline" : "event";
+            throw new PerformativeException("The description of a " + taskType + " cannot be empty");
+        }
+        return remaining;
+    }
+
+    private static void validateDeadlineComponents(String description, String by) throws PerformativeException {
+        if (description.isEmpty()) {
+            throw new PerformativeException("The description of a deadline cannot be empty");
+        }
+        if (by.isEmpty()) {
+            throw new PerformativeException("The deadline time cannot be empty");
+        }
+    }
+
+    private static boolean isValidEventFormat(int fromIndex, int toIndex) {
+        boolean fromIndexExists = fromIndex != NOT_FOUND;
+        boolean toIndexExists = toIndex != NOT_FOUND;
+        boolean correctOrder = toIndex > fromIndex;
+
+        return fromIndexExists && toIndexExists && correctOrder;
+    }
+
+    private static void validateEventComponents(String description, String from, String to)
+            throws PerformativeException {
+        if (description.isEmpty()) {
             throw new PerformativeException("The description of an event cannot be empty");
         }
-        int fromIndex = remaining.indexOf(" /from ");
-        int toIndex = remaining.indexOf(" /to ");
-        if (fromIndex != -1 && toIndex != -1 && toIndex > fromIndex) {
-            String description = remaining.substring(0, fromIndex).trim();
-            String from = remaining.substring(fromIndex + 7, toIndex).trim();
-            String to = remaining.substring(toIndex + 5).trim();
-            if (description.isEmpty()) {
-                throw new PerformativeException("The description of an event cannot be empty");
-            }
-            if (from.isEmpty()) {
-                throw new PerformativeException("The start time of an event cannot be empty");
-            }
-            if (to.isEmpty()) {
-                throw new PerformativeException("The end time of an event cannot be empty");
-            }
-            try {
-                return new Event(description, from, to);
-            } catch (DateTimeParseException e) {
-                throw new PerformativeException("Invalid event format, should be: "
-                        + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
-            }
-        } else {
-            throw new PerformativeException("Invalid event format, should be: "
-                    + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+        if (from.isEmpty()) {
+            throw new PerformativeException("The start time of an event cannot be empty");
+        }
+        if (to.isEmpty()) {
+            throw new PerformativeException("The end time of an event cannot be empty");
         }
     }
 }
