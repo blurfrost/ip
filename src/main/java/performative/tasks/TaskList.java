@@ -27,8 +27,10 @@ public class TaskList {
      * @param tasks ArrayList of existing tasks to initialize the TaskList with.
      */
     public TaskList(ArrayList<Task> tasks) {
+        assert tasks != null : "Task list cannot be null";
         this.tasks = tasks;
         this.taskCount = tasks.size();
+        assert this.taskCount >= 0 : "Task count must be non-negative";
     }
 
     /**
@@ -38,6 +40,8 @@ public class TaskList {
      * @return The Task object at the specified position.
      */
     public Task getTask(int taskNumber) {
+        assert taskNumber >= 1 && taskNumber <= taskCount : "Task number must be between 1 and " + taskCount;
+        assert tasks.size() == taskCount : "Internal state inconsistent: tasks.size() != taskCount";
         return this.tasks.get(taskNumber - TASK_NUMBER_OFFSET);
     }
 
@@ -66,8 +70,12 @@ public class TaskList {
      * @param task The task to be added to the list.
      */
     public void addTask(Task task) {
+        assert task != null : "Cannot add null task";
+        int oldCount = this.taskCount;
         this.tasks.add(task);
         this.taskCount += 1;
+        assert this.taskCount == oldCount + 1 : "Task count should increase by exactly 1";
+        assert tasks.size() == taskCount : "Internal state inconsistent after adding task";
     }
 
     /**
@@ -78,8 +86,14 @@ public class TaskList {
      * @return The removed Task object.
      */
     public Task deleteTask(int taskNumber) {
+        assert taskNumber >= 1 && taskNumber <= taskCount : "Task number must be between 1 and " + taskCount;
+        assert taskCount > 0 : "Cannot delete from empty task list";
+        int oldCount = this.taskCount;
         Task removedTask = tasks.remove(taskNumber - TASK_NUMBER_OFFSET);
         this.taskCount -= 1;
+        assert this.taskCount == oldCount - 1 : "Task count should decrease by exactly 1";
+        assert tasks.size() == taskCount : "Internal state inconsistent after deleting task";
+        assert removedTask != null : "Removed task should not be null";
         return removedTask;
     }
 }
