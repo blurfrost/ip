@@ -18,6 +18,17 @@ import performative.tasks.Todo;
 public class Storage {
     private File saveFile;
 
+    // Named constants to replace magic numbers
+    private static final int MINIMUM_TASK_PARTS = 3;
+    private static final int TYPE_INDEX = 0;
+    private static final int STATUS_INDEX = 1;
+    private static final int DESCRIPTION_INDEX = 2;
+    private static final int DEADLINE_TIME_INDEX = 3;
+    private static final int EVENT_START_TIME_INDEX = 3;
+    private static final int EVENT_END_TIME_INDEX = 4;
+    private static final int MINIMUM_DEADLINE_PARTS = 4;
+    private static final int MINIMUM_EVENT_PARTS = 5;
+
     /**
      * Creates a new Storage instance with the specified file path.
      *
@@ -78,13 +89,13 @@ public class Storage {
             String data = fileScanner.nextLine();
             String[] parts = data.split("; ");
 
-            if (parts.length < 3) {
+            if (parts.length < MINIMUM_TASK_PARTS) {
                 continue;
             }
 
-            String type = parts[0];
-            String status = parts[1];
-            String description = parts[2];
+            String type = parts[TYPE_INDEX];
+            String status = parts[STATUS_INDEX];
+            String description = parts[DESCRIPTION_INDEX];
 
             Task task = createTaskFromData(type, description, parts);
 
@@ -108,13 +119,13 @@ public class Storage {
             case "Todo":
                 return new Todo(description);
             case "Deadline":
-                if (parts.length >= 4) {
-                    return new Deadline(description, parts[3]);
+                if (parts.length >= MINIMUM_DEADLINE_PARTS) {
+                    return new Deadline(description, parts[DEADLINE_TIME_INDEX]);
                 }
                 break;
             case "Event":
-                if (parts.length >= 5) {
-                    return new Event(description, parts[3], parts[4]);
+                if (parts.length >= MINIMUM_EVENT_PARTS) {
+                    return new Event(description, parts[EVENT_START_TIME_INDEX], parts[EVENT_END_TIME_INDEX]);
                 }
                 break;
             default:
