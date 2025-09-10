@@ -17,6 +17,18 @@ import performative.ui.Ui;
  */
 public class Parser {
 
+    // Named constants to replace magic numbers
+    private static final int EXPECTED_COMMAND_PARTS = 2;
+    private static final int TASK_NUMBER_INDEX = 1;
+    private static final int FIND_KEYWORD_START_INDEX = 5;
+    private static final int TODO_DESCRIPTION_START_INDEX = 5;
+    private static final int DEADLINE_PREFIX_LENGTH = 9;
+    private static final int EVENT_PREFIX_LENGTH = 6;
+    private static final int BY_KEYWORD_LENGTH = 5;
+    private static final int FROM_KEYWORD_LENGTH = 7;
+    private static final int TO_KEYWORD_LENGTH = 5;
+    private static final int NOT_FOUND = -1;
+
     /**
      * Parses user input and executes the corresponding command.
      * Returns a string response for the GUI.
@@ -55,9 +67,9 @@ public class Parser {
      */
     private static String parseMarkUnmark(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
-        if (parts.length == 2) {
+        if (parts.length == EXPECTED_COMMAND_PARTS) {
             try {
-                int taskNumber = Integer.parseInt(parts[1]);
+                int taskNumber = Integer.parseInt(parts[TASK_NUMBER_INDEX]);
                 if (input.startsWith("mark ")) {
                     return performative.markTask(taskNumber);
                 } else {
@@ -84,9 +96,9 @@ public class Parser {
      */
     private static String parseDelete(String input, Performative performative, Ui ui) {
         String[] parts = input.split(" ");
-        if (parts.length == 2) {
+        if (parts.length == EXPECTED_COMMAND_PARTS) {
             try {
-                int taskNumber = Integer.parseInt(parts[1]);
+                int taskNumber = Integer.parseInt(parts[TASK_NUMBER_INDEX]);
                 return performative.deleteTask(taskNumber);
             } catch (NumberFormatException e) {
                 return ui.getInvalidNumberFormatMessage();
@@ -127,7 +139,7 @@ public class Parser {
      * @return String response for the GUI.
      */
     private static String parseFind(String input, Performative performative, Ui ui) {
-        String keyword = input.substring(5).trim();
+        String keyword = input.substring(FIND_KEYWORD_START_INDEX).trim();
         if (keyword.isEmpty()) {
             return ui.getEmptyFindKeywordMessage();
         } else {
@@ -139,7 +151,7 @@ public class Parser {
         if (input.equals("todo")) {
             throw new PerformativeException("The description of a todo cannot be empty");
         }
-        String description = input.substring(5).trim();
+        String description = input.substring(TODO_DESCRIPTION_START_INDEX).trim();
         if (description.isEmpty()) {
             throw new PerformativeException("The description of a todo cannot be empty");
         }
@@ -148,16 +160,16 @@ public class Parser {
 
     private static Task parseDeadline(String input) throws PerformativeException {
         validateDeadlineInput(input);
-        String remaining = extractRemainingContent(input, 9);
+        String remaining = extractRemainingContent(input, DEADLINE_PREFIX_LENGTH);
 
         int byIndex = remaining.indexOf(" /by ");
-        if (byIndex == -1) {
+        if (byIndex == NOT_FOUND) {
             throw new PerformativeException(
                     "Deadline format should be: deadline <description> /by <time>");
         }
 
         String description = remaining.substring(0, byIndex).trim();
-        String by = remaining.substring(byIndex + 5).trim();
+        String by = remaining.substring(byIndex + BY_KEYWORD_LENGTH).trim();
 
         validateDeadlineComponents(description, by);
 
@@ -171,7 +183,7 @@ public class Parser {
 
     private static Task parseEvent(String input) throws PerformativeException {
         validateEventInput(input);
-        String remaining = extractRemainingContent(input, 6);
+        String remaining = extractRemainingContent(input, EVENT_PREFIX_LENGTH);
 
         int fromIndex = remaining.indexOf(" /from ");
         int toIndex = remaining.indexOf(" /to ");
@@ -182,8 +194,8 @@ public class Parser {
         }
 
         String description = remaining.substring(0, fromIndex).trim();
-        String from = remaining.substring(fromIndex + 7, toIndex).trim();
-        String to = remaining.substring(toIndex + 5).trim();
+        String from = remaining.substring(fromIndex + FROM_KEYWORD_LENGTH, toIndex).trim();
+        String to = remaining.substring(toIndex + TO_KEYWORD_LENGTH).trim();
 
         validateEventComponents(description, from, to);
 
@@ -210,7 +222,7 @@ public class Parser {
     private static String extractRemainingContent(String input, int prefixLength) throws PerformativeException {
         String remaining = input.substring(prefixLength).trim();
         if (remaining.isEmpty()) {
-            String taskType = prefixLength == 9 ? "deadline" : "event";
+            String taskType = prefixLength == DEADLINE_PREFIX_LENGTH ? "deadline" : "event";
             throw new PerformativeException("The description of a " + taskType + " cannot be empty");
         }
         return remaining;
@@ -226,7 +238,11 @@ public class Parser {
     }
 
     private static boolean isValidEventFormat(int fromIndex, int toIndex) {
-        return fromIndex != -1 && toIndex != -1 && toIndex > fromIndex;
+        boolean fromIndexExists = fromIndex != NOT_FOUND;
+        boolean toIndexExists = toIndex != NOT_FOUND;
+        boolean correctOrder = toIndex > fromIndex;
+
+        return fromIndexExists && toIndexExists && correctOrder;
     }
 
     private static void validateEventComponents(String description, String from, String to)
