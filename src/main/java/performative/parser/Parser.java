@@ -176,7 +176,8 @@ public class Parser {
             return new Deadline(description, by);
         } catch (DateTimeParseException e) {
             throw new PerformativeException(
-                    "The deadline time format is invalid, use YYYY-MM-DD HHMM or a valid date");
+                    "The deadline time format is invalid. "
+                    + "Use YYYY-MM-DD HHMM format or day of week (e.g., Monday, Mon)");
         }
     }
 
