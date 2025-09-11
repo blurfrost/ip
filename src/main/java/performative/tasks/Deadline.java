@@ -52,22 +52,95 @@ public class Deadline extends Task {
 
     /**
      * Parses a date-time string into a LocalDateTime object.
-     * Supports both "yyyy-MM-dd HHmm" format and day-of-week formats.
+     * Supports "yyyy-MM-dd HHmm" format, day-of-week formats, and day-of-week with time (e.g., "Mon 1900").
      *
-     * @param dateTimeString Date-time string in "yyyy-MM-dd HHmm" format or day of week.
+     * @param dateTimeString Date-time string in various supported formats.
      * @return LocalDateTime object representing the parsed date-time.
      * @throws DateTimeParseException If the string cannot be parsed.
      */
     private LocalDateTime parseDateTime(String dateTimeString) throws DateTimeParseException {
-        // First try to parse as day of week
-        DayOfWeek dayOfWeek = DAY_OF_WEEK_MAP.get(dateTimeString.toLowerCase().trim());
-        if (dayOfWeek != null) {
-            return getNextDayOfWeek(dayOfWeek);
+        String input = dateTimeString.toLowerCase().trim();
+
+        // Try to parse as day-of-week format (with or without time)
+        LocalDateTime dayResult = tryParseDayFormat(input);
+        if (dayResult != null) {
+            return dayResult;
         }
 
-        // If not a day of week, try the original format
+        // If not a day of week format, try the original YYYY-MM-DD HHMM format
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         return LocalDateTime.parse(dateTimeString, inputFormatter);
+    }
+
+    /**
+     * Attempts to parse input as a day-of-week format (with or without time).
+     * Handles both "Day Time" (e.g., "Mon 1900") and "Day" (e.g., "Monday") formats.
+     *
+     * @param input The trimmed and lowercase input string.
+     * @return LocalDateTime if parsing succeeds, null if parsing fails.
+     */
+    private LocalDateTime tryParseDayFormat(String input) {
+        String[] parts = input.split("\\s+");
+
+        // Check for "Day Time" format (e.g., "Mon 1900")
+        if (parts.length == 2) {
+            DayOfWeek dayOfWeek = DAY_OF_WEEK_MAP.get(parts[0]);
+            if (dayOfWeek != null) {
+                return tryParseDayWithTime(dayOfWeek, parts[1]);
+            }
+        }
+
+        // Check for "Day only" format (e.g., "Monday")
+        if (parts.length == 1) {
+            DayOfWeek dayOfWeek = DAY_OF_WEEK_MAP.get(input);
+            if (dayOfWeek != null) {
+                return getNextDayOfWeek(dayOfWeek);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Attempts to parse a day of week with a time component.
+     *
+     * @param dayOfWeek The day of the week.
+     * @param timeStr The time string to parse (expected format: HHMM).
+     * @return LocalDateTime if parsing succeeds, null if parsing fails.
+     */
+    private LocalDateTime tryParseDayWithTime(DayOfWeek dayOfWeek, String timeStr) {
+        if (!timeStr.matches("\\d{4}")) { // Early return if not 4-digit format
+            return null;
+        }
+
+        try {
+            int hour = Integer.parseInt(timeStr.substring(0, 2));
+            int minute = Integer.parseInt(timeStr.substring(2, 4));
+
+            if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+                return getNextDayOfWeekWithTime(dayOfWeek, hour, minute);
+            }
+        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the next occurrence of the specified day of the week with custom time.
+     * If today is the specified day, returns next week's occurrence.
+     *
+     * @param dayOfWeek The target day of the week.
+     * @param hour The hour (0-23).
+     * @param minute The minute (0-59).
+     * @return LocalDateTime representing the next occurrence of the day with specified time.
+     */
+    private LocalDateTime getNextDayOfWeekWithTime(DayOfWeek dayOfWeek, int hour, int minute) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime nextOccurrence = now.with(TemporalAdjusters.next(dayOfWeek));
+
+        return nextOccurrence.withHour(hour).withMinute(minute).withSecond(0).withNano(0);
     }
 
     /**
@@ -82,7 +155,6 @@ public class Deadline extends Task {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime nextOccurrence = now.with(TemporalAdjusters.next(dayOfWeek));
 
-        // Set time to 23:59 (end of day) for day-of-week deadlines
         return nextOccurrence.withHour(23).withMinute(59).withSecond(0).withNano(0);
     }
 
