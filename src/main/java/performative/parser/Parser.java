@@ -177,7 +177,8 @@ public class Parser {
         } catch (DateTimeParseException e) {
             throw new PerformativeException(
                     "The deadline time format is invalid. "
-                    + "Use YYYY-MM-DD HHMM format or day of week (e.g., Monday, Mon)");
+                    + "Use YYYY-MM-DD HHMM format, day of week (e.g., Monday, Mon), "
+                    + "or day of week with time (e.g., Mon 1900)");
         }
     }
 
@@ -190,7 +191,7 @@ public class Parser {
 
         if (!isValidEventFormat(fromIndex, toIndex)) {
             throw new PerformativeException("Invalid event format, should be: "
-                    + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+                    + "event <description> /from <from> /to <to>");
         }
 
         String description = remaining.substring(0, fromIndex).trim();
@@ -202,8 +203,9 @@ public class Parser {
         try {
             return new Event(description, from, to);
         } catch (DateTimeParseException e) {
-            throw new PerformativeException("Invalid event format, should be: "
-                    + "event <description> /from YYYY-MM-DD HHmm /to YYYY-MM-DD HHmm");
+            throw new PerformativeException("The event time format is invalid."
+                    + "Use YYYY-MM-DD HHMM format, day of week (e.g., Monday, Mon), "
+                    + "or day of week with time (e.g., Mon 1900)");
         }
     }
 
