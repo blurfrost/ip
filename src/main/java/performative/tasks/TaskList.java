@@ -7,11 +7,11 @@ import java.util.ArrayList;
  * Provides operations to add, delete, retrieve, and manage tasks.
  */
 public class TaskList {
-    private ArrayList<Task> tasks;
-    private int taskCount;
-
     private static final int INITIAL_TASK_COUNT = 0;
     private static final int TASK_NUMBER_OFFSET = 1;
+
+    private ArrayList<Task> tasks;
+    private int taskCount;
 
     /**
      * Constructs a new empty TaskList.
