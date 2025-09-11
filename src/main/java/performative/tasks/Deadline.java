@@ -14,6 +14,10 @@ import java.util.Map;
  */
 public class Deadline extends Task {
     private static final Map<String, DayOfWeek> DAY_OF_WEEK_MAP = setupDayOfWeekMap();
+    private static final String FOUR_DIGIT_FORMAT = "\\d{4}";
+    private static final String SPACES_REGEX = "\\s+";
+    private static final String DATE_DISPLAY_FORMAT = "dd MMM yyyy HHmm";
+    private static final String DATE_SAVE_FORMAT = "yyyy-MM-dd HHmm";
 
     private LocalDateTime by;
 
@@ -61,14 +65,12 @@ public class Deadline extends Task {
     private LocalDateTime parseDateTime(String dateTimeString) throws DateTimeParseException {
         String input = dateTimeString.toLowerCase().trim();
 
-        // Try to parse as day-of-week format (with or without time)
         LocalDateTime dayResult = tryParseDayFormat(input);
         if (dayResult != null) {
             return dayResult;
         }
 
-        // If not a day of week format, try the original YYYY-MM-DD HHMM format
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern(DATE_SAVE_FORMAT);
         return LocalDateTime.parse(dateTimeString, inputFormatter);
     }
 
@@ -80,9 +82,8 @@ public class Deadline extends Task {
      * @return LocalDateTime if parsing succeeds, null if parsing fails.
      */
     private LocalDateTime tryParseDayFormat(String input) {
-        String[] parts = input.split("\\s+");
+        String[] parts = input.split(SPACES_REGEX);
 
-        // Check for "Day Time" format (e.g., "Mon 1900")
         if (parts.length == 2) {
             DayOfWeek dayOfWeek = DAY_OF_WEEK_MAP.get(parts[0]);
             if (dayOfWeek != null) {
@@ -90,7 +91,6 @@ public class Deadline extends Task {
             }
         }
 
-        // Check for "Day only" format (e.g., "Monday")
         if (parts.length == 1) {
             DayOfWeek dayOfWeek = DAY_OF_WEEK_MAP.get(input);
             if (dayOfWeek != null) {
@@ -109,7 +109,7 @@ public class Deadline extends Task {
      * @return LocalDateTime if parsing succeeds, null if parsing fails.
      */
     private LocalDateTime tryParseDayWithTime(DayOfWeek dayOfWeek, String timeStr) {
-        if (!timeStr.matches("\\d{4}")) { // Early return if not 4-digit format
+        if (!timeStr.matches(FOUR_DIGIT_FORMAT)) {
             return null;
         }
 
@@ -165,8 +165,7 @@ public class Deadline extends Task {
      * @return Formatted date-time string in "dd MMM yyyy HHmm" format.
      */
     public String formatDateTime(LocalDateTime dateTime) {
-        // Format as "dd MMM yyyy HHmm"
-        return dateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HHmm"));
+        return dateTime.format(DateTimeFormatter.ofPattern(DATE_DISPLAY_FORMAT));
     }
 
     /**
@@ -176,8 +175,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toSaveFormat() {
-        // Save in original YYYY-MM-DD HHMM format
-        DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern(DATE_SAVE_FORMAT);
         return "Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
                 + super.getDescription() + "; " + by.format(saveFormatter);
     }
