@@ -16,8 +16,6 @@ import performative.tasks.Todo;
  * Manages loading and saving tasks to and from the file system.
  */
 public class Storage {
-    private File saveFile;
-
     private static final int MINIMUM_TASK_PARTS = 3;
     private static final int TYPE_INDEX = 0;
     private static final int STATUS_INDEX = 1;
@@ -27,6 +25,8 @@ public class Storage {
     private static final int EVENT_END_TIME_INDEX = 4;
     private static final int MINIMUM_DEADLINE_PARTS = 4;
     private static final int MINIMUM_EVENT_PARTS = 5;
+
+    private File saveFile;
 
     /**
      * Creates a new Storage instance with the specified file path.
