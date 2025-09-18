@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+
 /**
  * Controller for the main GUI.
  */
@@ -41,7 +42,7 @@ public class MainWindow extends AnchorPane {
      * Displays the initial greeting message from Performative.
      */
     private void showGreeting() {
-        String greetingMessage = "Hello! I'm Performative. How can I assist you today?";
+        String greetingMessage = performative.getWelcomeMessage();
         dialogContainer.getChildren().add(
                 DialogBox.getPerformativeDialog(greetingMessage, performativeImage)
         );
