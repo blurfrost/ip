@@ -177,6 +177,15 @@ public class Performative {
     }
 
     /**
+     * Returns the welcome message from the UI.
+     *
+     * @return Welcome message string.
+     */
+    public String getWelcomeMessage() {
+        return ui.getWelcomeMessage();
+    }
+
+    /**
      * Handles user input and returns appropriate response for GUI.
      *
      * @param input User input string.
