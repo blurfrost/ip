@@ -23,8 +23,9 @@ public class MainWindow extends AnchorPane {
 
     private Performative performative;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/kinglaugh.png"));
-    private Image performativeImage = new Image(this.getClass().getResourceAsStream("/images/kingsad.png"));
+    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/user-image.png"));
+    private Image performativeImage = new Image(
+            this.getClass().getResourceAsStream("/images/performative-male-image.png"));
 
     @FXML
     public void initialize() {
