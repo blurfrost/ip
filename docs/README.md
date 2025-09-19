@@ -1,7 +1,6 @@
 # Performative User Guide
 
-
-![Product Screenshot](Ui.png)
+<img src="Ui.png" alt="Product Screenshot" width="300">
 
 ## Introduction
 Performative is a desktop app for managing tasks in different formats, such as to-dos, deadlines and events. 
@@ -14,6 +13,11 @@ while having the benefits of a Graphical User Interface (GUI).
   - [Adding deadlines](#adding-deadlines-deadline)
   - [Adding events](#adding-events-event)
   - [Listing all tasks](#listing-all-tasks-list)
+  - [Finding tasks by substring](#finding-tasks-by-substring-find)
+  - [Marking / unmarking a task as done/undone](#marking--unmarking-a-task-as-doneundone-markunmark)
+  - [Deleting a task](#deleting-a-task-delete)
+  - [Saving data](#saving-data)
+  - [Editing the data file](#editing-the-data-file)
 
 
 ## Quick Start
@@ -109,12 +113,70 @@ For example: `event short trip /from Mon /to Tue` has the task saved and display
 
 ### Listing all tasks: `list`
 
+This command lists all tasks in the task list.
 
+Format: `list`
 
 ### Finding tasks by substring: `find`
 
+This command finds tasks whose descriptions contain the given substring.
 
-### Marking/unmarking a task as done/undone: `mark`/`unmark`
+Format: `find [substring]`
 
+- The search is case-insensitive.
+- As long as the substring appears in the description, it is considered a match. 
+- E.g. 'find book' will match a task with description 'read book' and 'read books'.
+
+### Marking / unmarking a task as done/undone: `mark`/`unmark`
+
+This command marks/unmarks a task as done/undone based on the command given.
+
+Format: `mark [task number]` / `unmark [task number]`
+
+- `mark` marks the task corresponding to the task number as done.
+- `unmark` marks the task corresponding to the task number as undone.
+
+For example, in this task list:
+```
+1.[T][] read book
+2.[D][X] submit report (by: 25 Dec 2025 2359)
+```
+
+- `mark 1` will mark the first task as done, changing the task list to:
+```
+1.[T][X] read book
+2.[D][X] submit report (by: 25 Dec 2025 2359)
+```
+
+- `unmark 2` will mark the second task as undone, changing the task list to:
+```
+1.[T][] read book
+2.[D][] submit report (by: 25 Dec 2025 2359)
+```
 
 ### Deleting a task: `delete`
+
+This command deletes a task based on the task number given.
+
+Format: `delete [task number]`
+
+For example, in this task list:
+```
+1.[T][] read book
+2.[D][X] submit report (by: 25 Dec 2025 2359)
+```
+
+`delete 1` will delete the first task, changing the task list to:
+```
+1.[D][X] submit report (by: 25 Dec 2025 2359
+```
+
+### Saving data
+
+Tasks are saved in the hard disk automatically after every command that modifies the task list. 
+There is no need to perform a manual save.
+
+### Editing the data file
+
+Task data is saved automatically in a .txt file `[JAR file location]/data/savefile.txt`.
+Advanced users are welcome to update data directly by editing that data file.
