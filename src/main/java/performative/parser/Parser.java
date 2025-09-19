@@ -240,11 +240,11 @@ public class Parser {
     }
 
     private static boolean isValidEventFormat(int fromIndex, int toIndex) {
-        boolean fromIndexExists = fromIndex != NOT_FOUND;
-        boolean toIndexExists = toIndex != NOT_FOUND;
+        boolean hasFromIndex = fromIndex != NOT_FOUND;
+        boolean hasToIndex = toIndex != NOT_FOUND;
         boolean correctOrder = toIndex > fromIndex;
 
-        return fromIndexExists && toIndexExists && correctOrder;
+        return hasFromIndex && hasToIndex && correctOrder;
     }
 
     private static void validateEventComponents(String description, String from, String to)

@@ -21,7 +21,7 @@ public class Todo extends Task {
      */
     @Override
     public String toSaveFormat() {
-        return "Todo; " + (getStatus() ? "Complete" : "Incomplete") + "; " + getDescription();
+        return "Todo; " + (isDone() ? "Complete" : "Incomplete") + "; " + getDescription();
     }
 
     /**

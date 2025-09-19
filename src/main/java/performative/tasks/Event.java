@@ -179,7 +179,7 @@ public class Event extends Task {
     @Override
     public String toSaveFormat() {
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern(DATE_SAVE_FORMAT);
-        return "Event; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
+        return "Event; " + (super.isDone() ? "Complete" : "Incomplete") + "; "
                 + super.getDescription() + "; " + start.format(saveFormatter) + "; " + end.format(saveFormatter);
     }
 
@@ -194,4 +194,3 @@ public class Event extends Task {
                 + formatDateTime(this.end) + ")";
     }
 }
-

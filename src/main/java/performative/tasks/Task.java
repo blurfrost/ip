@@ -5,7 +5,7 @@ package performative.tasks;
  * Serves as the base class for more specific task types.
  */
 public class Task {
-    private boolean status;
+    private boolean isDone;
     private String description;
 
     /**
@@ -15,7 +15,7 @@ public class Task {
      * @param description The description of the task.
      */
     public Task(String description) {
-        this.status = false;
+        this.isDone = false;
         this.description = description;
     }
 
@@ -23,14 +23,14 @@ public class Task {
      * Marks the task as completed.
      */
     public void markDone() {
-        this.status = true;
+        this.isDone = true;
     }
 
     /**
      * Marks the task as not completed.
      */
     public void markUndone() {
-        this.status = false;
+        this.isDone = false;
     }
 
     /**
@@ -38,8 +38,8 @@ public class Task {
      *
      * @return True if the task is completed, false otherwise.
      */
-    public boolean getStatus() {
-        return this.status;
+    public boolean isDone() {
+        return this.isDone;
     }
 
     /**
@@ -58,7 +58,7 @@ public class Task {
      * @return String representation for file storage.
      */
     public String toSaveFormat() {
-        return "Task; " + (status ? "Complete" : "Incomplete") + "; " + description;
+        return "Task; " + (isDone ? "Complete" : "Incomplete") + "; " + description;
     }
 
     /**
@@ -69,6 +69,6 @@ public class Task {
      */
     @Override
     public String toString() {
-        return "[" + (status ? "X" : " ") + "] " + description;
+        return "[" + (isDone ? "X" : " ") + "] " + description;
     }
 }
