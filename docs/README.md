@@ -31,9 +31,9 @@ A GUI similar to the above screenshot should appear in a few seconds.
 
 ## Features
 
-> [!NOTE]
-> About date time formats:
+> **Note: About date time formats**
 > 
+>
 > [date] can be represented in the formats 'YYYY-MM-DD' or by the day of the week (e.g. Mon, Monday), in which the next 
 > occurence of the specified day will be used.
 > 
