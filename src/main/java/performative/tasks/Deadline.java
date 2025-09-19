@@ -176,7 +176,7 @@ public class Deadline extends Task {
     @Override
     public String toSaveFormat() {
         DateTimeFormatter saveFormatter = DateTimeFormatter.ofPattern(DATE_SAVE_FORMAT);
-        return "Deadline; " + (super.getStatus() ? "Complete" : "Incomplete") + "; "
+        return "Deadline; " + (super.isDone() ? "Complete" : "Incomplete") + "; "
                 + super.getDescription() + "; " + by.format(saveFormatter);
     }
 
