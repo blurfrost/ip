@@ -44,11 +44,11 @@ public class Parser {
             return performative.listTasks();
         } else if (input.startsWith("mark ") || input.startsWith("unmark ")) {
             return parseMarkUnmark(input, performative, ui);
-        } else if (input.startsWith("delete")) {
+        } else if (input.startsWith("delete ")) {
             return parseDelete(input, performative, ui);
         } else if (input.startsWith("find ")) {
             return parseFind(input, performative, ui);
-        } else if (input.startsWith("deadline") || input.startsWith("event") || input.startsWith("todo")) {
+        } else if (input.startsWith("deadline ") || input.startsWith("event ") || input.startsWith("todo ")) {
             return performative.addTask(input);
         } else {
             return ui.getUnsupportedCommandMessage();
